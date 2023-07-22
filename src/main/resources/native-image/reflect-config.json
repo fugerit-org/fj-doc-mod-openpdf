@@ -1,0 +1,20 @@
+[
+  {
+    "name": "org.fugerit.java.doc.mod.openpdf.PdfTypeHandler",
+ 	"methods": [
+      { "name": "<init>", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "org.fugerit.java.doc.mod.openpdf.PtfTypeHandler",
+ 	"methods": [
+      { "name": "<init>", "parameterTypes": [] }
+    ]
+  },
+  {
+    "name": "org.fugerit.java.doc.mod.openpdf.HtmlTypeHandler",
+ 	"methods": [
+      { "name": "<init>", "parameterTypes": [] }
+    ]
+  }
+]
