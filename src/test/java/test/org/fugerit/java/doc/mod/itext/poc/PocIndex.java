@@ -85,20 +85,6 @@ public class PocIndex {
 	    list.add(new ListItem("dog", font));
 	    document.add(list);
 	    
-	    //PdfStructureTreeRoot tree = writer.getStructureTreeRoot();;
-	    
-	    
-//		PdfOutline root = writer.getRootOutline();
-//		PdfDestination mybookmark = new PdfDestination( PdfDestination.FITH, writer.getVerticalPosition(true) );
-//		PdfOutline bookmark = new PdfOutline( root , mybookmark, "test bookmark", true );
-//		ArrayList outlines = new ArrayList();
-//		HashMap map = new HashMap();
-//		outlines.add(map);
-		
-
-		
-	    
-	    
 	    document.close();
 
 	}
