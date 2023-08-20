@@ -8,6 +8,7 @@ import org.fugerit.java.doc.base.config.DocOutput;
 import org.fugerit.java.doc.base.config.DocTypeHandler;
 import org.fugerit.java.doc.base.config.DocTypeHandlerDefault;
 import org.fugerit.java.doc.base.model.DocBase;
+import org.fugerit.java.doc.mod.openpdf.helpers.OpenPpfDocHandler;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.PageSize;
@@ -23,7 +24,7 @@ public class PdfTypeHandler extends DocTypeHandlerDefault {
 	public static DocTypeHandler HANDLER = new PdfTypeHandler();
 	
 	public PdfTypeHandler() {
-		super( ITextDocHandler.DOC_OUTPUT_PDF, ITextDocHandler.MODULE );
+		super( OpenPpfDocHandler.DOC_OUTPUT_PDF, OpenPpfDocHandler.MODULE );
 	}
 
 	@Override
@@ -40,7 +41,7 @@ public class PdfTypeHandler extends DocTypeHandlerDefault {
 		// create pdf writer
 		PdfWriter pdfWriter = PdfWriter.getInstance( document, baos );
 		// create doc handler
-		ITextDocHandler handler = new ITextDocHandler( document, pdfWriter );
+		OpenPpfDocHandler handler = new OpenPpfDocHandler( document, pdfWriter );
 		if ( "true".equalsIgnoreCase( docBase.getInfo().getProperty( "set-total-page" ) ) ) {
 			handler.handleDoc( docBase );
 			int totalPageCount = pdfWriter.getCurrentPageNumber()-1;
@@ -50,7 +51,7 @@ public class PdfTypeHandler extends DocTypeHandlerDefault {
 					Integer.parseInt( margins[3] ) );
 			baos = new ByteArrayOutputStream();
 			pdfWriter = PdfWriter.getInstance( document, baos );
-			handler = new ITextDocHandler(document, pdfWriter, totalPageCount );
+			handler = new OpenPpfDocHandler(document, pdfWriter, totalPageCount );
 		}
 		handler.handleDoc( docBase );
 		baos.writeTo( outputStream );

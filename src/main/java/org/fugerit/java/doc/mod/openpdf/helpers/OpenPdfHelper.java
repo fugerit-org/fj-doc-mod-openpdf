@@ -1,12 +1,12 @@
-package org.fugerit.java.doc.mod.openpdf;
+package org.fugerit.java.doc.mod.openpdf.helpers;
 
 import java.util.Properties;
 
 import com.lowagie.text.pdf.PdfWriter;
 
-public class ITextHelper {
+public class OpenPdfHelper {
 
-	public ITextHelper() {
+	public OpenPdfHelper() {
 		this.params = new Properties();
 	}
 	

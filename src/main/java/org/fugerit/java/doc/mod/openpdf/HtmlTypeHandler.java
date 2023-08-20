@@ -8,6 +8,7 @@ import org.fugerit.java.doc.base.config.DocOutput;
 import org.fugerit.java.doc.base.config.DocTypeHandler;
 import org.fugerit.java.doc.base.config.DocTypeHandlerDefault;
 import org.fugerit.java.doc.base.model.DocBase;
+import org.fugerit.java.doc.mod.openpdf.helpers.OpenPpfDocHandler;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.html.HtmlWriter;
@@ -22,7 +23,7 @@ public class HtmlTypeHandler extends DocTypeHandlerDefault {
 	public static final DocTypeHandler HANDLER = new HtmlTypeHandler();
 	
 	public HtmlTypeHandler() {
-		super( ITextDocHandler.DOC_OUTPUT_HTML, ITextDocHandler.MODULE );
+		super( OpenPpfDocHandler.DOC_OUTPUT_HTML, OpenPpfDocHandler.MODULE );
 	}
 
 	@Override
@@ -32,7 +33,7 @@ public class HtmlTypeHandler extends DocTypeHandlerDefault {
 		Document document = new Document( );
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		HtmlWriter.getInstance( document, baos );
-		ITextDocHandler handler = new ITextDocHandler( document, ITextDocHandler.DOC_OUTPUT_HTML );
+		OpenPpfDocHandler handler = new OpenPpfDocHandler( document, OpenPpfDocHandler.DOC_OUTPUT_HTML );
 		handler.handleDoc( docBase );
 		baos.writeTo( outputStream );
 		baos.close();

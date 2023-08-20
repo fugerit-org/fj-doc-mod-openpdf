@@ -1,4 +1,4 @@
-package org.fugerit.java.doc.mod.openpdf;
+package org.fugerit.java.doc.mod.openpdf.helpers;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -27,7 +27,7 @@ import com.lowagie.text.pdf.PdfWriter;
  */
 public class PdfHelper  extends PdfPageEventHelper {
 	
-	public PdfHelper( ITextHelper docHelper ) {
+	public PdfHelper( OpenPdfHelper docHelper ) {
 		this.docHelper = docHelper;
 		this.docHeader = null;
 		this.docFooter = null;
@@ -38,7 +38,7 @@ public class PdfHelper  extends PdfPageEventHelper {
     private float footerTextSize = 8f;
     private int pageNumberAlignment = Element.ALIGN_CENTER;
  
-    private ITextHelper docHelper;
+    private OpenPdfHelper docHelper;
     
     private int currentPageNumber;
 
@@ -48,10 +48,10 @@ public class PdfHelper  extends PdfPageEventHelper {
     
     public void onStartPage(PdfWriter writer, Document document) {
     	this.currentPageNumber = writer.getPageNumber();
-    	this.docHelper.getParams().setProperty( ITextDocHandler.PARAM_PAGE_CURRENT , String.valueOf( writer.getPageNumber() ) );
+    	this.docHelper.getParams().setProperty( OpenPpfDocHandler.PARAM_PAGE_CURRENT , String.valueOf( writer.getPageNumber() ) );
 		if ( this.getDocHeader() != null ) {
 			try {
-				ITextDocHandler.handleElements( document, this.getDocHeader().docElements(), docHelper );
+				OpenPpfDocHandler.handleElements( document, this.getDocHeader().docElements(), docHelper );
 			} catch (Exception e) {
 				LogFacade.getLog().error( "ITextDocHandler - PdfHelper.onStartPage : "+e );
 				throw new RuntimeException( e );
@@ -86,7 +86,7 @@ public class PdfHelper  extends PdfPageEventHelper {
 				DocElement current = (DocElement)itElements.next();
 				if ( current instanceof DocPara ) {
 					DocPara para = (DocPara) current;;
-					String text = ITextDocHandler.createText( docHelper.getParams(), para.getText() );
+					String text = OpenPpfDocHandler.createText( docHelper.getParams(), para.getText() );
 					float textSize = baseFont.getWidthPoint(text, footerTextSize);
 					float textBase = document.bottom() - totalOffset;
 					int rowOffset = 10;

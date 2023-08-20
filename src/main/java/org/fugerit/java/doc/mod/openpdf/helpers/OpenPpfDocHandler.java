@@ -1,4 +1,4 @@
-package org.fugerit.java.doc.mod.openpdf;
+package org.fugerit.java.doc.mod.openpdf.helpers;
 
 
 import java.awt.Color;
@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.Properties;
 
 import org.fugerit.java.core.lang.helpers.StringUtils;
@@ -16,8 +15,6 @@ import org.fugerit.java.doc.base.config.DocConfig;
 import org.fugerit.java.doc.base.helper.SourceResolverHelper;
 import org.fugerit.java.doc.base.model.DocBarcode;
 import org.fugerit.java.doc.base.model.DocBase;
-import org.fugerit.java.doc.base.model.DocBorders;
-import org.fugerit.java.doc.base.model.DocCell;
 import org.fugerit.java.doc.base.model.DocElement;
 import org.fugerit.java.doc.base.model.DocFooter;
 import org.fugerit.java.doc.base.model.DocHeader;
@@ -27,15 +24,11 @@ import org.fugerit.java.doc.base.model.DocInfo;
 import org.fugerit.java.doc.base.model.DocPageBreak;
 import org.fugerit.java.doc.base.model.DocPara;
 import org.fugerit.java.doc.base.model.DocPhrase;
-import org.fugerit.java.doc.base.model.DocRow;
 import org.fugerit.java.doc.base.model.DocStyle;
 import org.fugerit.java.doc.base.model.DocTable;
 import org.fugerit.java.doc.base.xml.DocModelUtils;
-import org.fugerit.java.doc.mod.openpdf.helpers.CellParent;
-import org.fugerit.java.doc.mod.openpdf.helpers.DocumentParent;
 
 import com.lowagie.text.Anchor;
-import com.lowagie.text.Cell;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.Element;
@@ -46,9 +39,6 @@ import com.lowagie.text.Image;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
-import com.lowagie.text.Table;
-import com.lowagie.text.alignment.HorizontalAlignment;
-import com.lowagie.text.alignment.VerticalAlignment;
 import com.lowagie.text.html.HtmlTags;
 import com.lowagie.text.pdf.Barcode;
 import com.lowagie.text.pdf.Barcode128;
@@ -62,7 +52,7 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.rtf.RtfWriter2;
 import com.lowagie.text.rtf.headerfooter.RtfHeaderFooter;
 
-public class ITextDocHandler {
+public class OpenPpfDocHandler {
 	
 
 	private static final ParamFinder PARAM_FINDER = ParamFinder.newFinder();
@@ -89,7 +79,7 @@ public class ITextDocHandler {
 		return res;
 	}
 	
-	private static void setStyle( DocStyle parent, DocStyle current ) {
+	protected static void setStyle( DocStyle parent, DocStyle current ) {
 		if ( current.getBackColor() == null ) {
 			current.setBackColor( parent.getBackColor() );
 		}
@@ -120,22 +110,22 @@ public class ITextDocHandler {
 
 	private int totalPageCount; 
 	
-	public ITextDocHandler( Document document, RtfWriter2 rtfWriter2 ) {
+	public OpenPpfDocHandler( Document document, RtfWriter2 rtfWriter2 ) {
 		this( document, DOC_OUTPUT_RTF );
 		//this.rtfWriter2 = rtfWriter2;
 	}	
 	
-	public ITextDocHandler( Document document, PdfWriter pdfWriter ) {
+	public OpenPpfDocHandler( Document document, PdfWriter pdfWriter ) {
 		this(document, pdfWriter, -1);
 	}	
 	
-	public ITextDocHandler( Document document, PdfWriter pdfWriter, int totalPageCount ) {
+	public OpenPpfDocHandler( Document document, PdfWriter pdfWriter, int totalPageCount ) {
 		this( document, DOC_OUTPUT_PDF );
 		this.pdfWriter = pdfWriter;
 		this.totalPageCount = totalPageCount;
 	}	
 	
-	public ITextDocHandler( Document document, String docType ) {
+	public OpenPpfDocHandler( Document document, String docType ) {
 		this.document = document;
 		this.docType = docType;
 	}
@@ -176,7 +166,7 @@ public class ITextDocHandler {
 		return PARAM_FINDER.substitute( text , params );
 	}
 	
-	protected static Chunk createChunk( DocPhrase docPhrase, ITextHelper docHelper ) throws Exception {
+	protected static Chunk createChunk( DocPhrase docPhrase, OpenPdfHelper docHelper ) throws Exception {
 		String text = createText( docHelper.getParams(), docPhrase.getText() );
 		int style = docPhrase.getStyle();
 		String fontName = docPhrase.getFontName();
@@ -185,7 +175,7 @@ public class ITextDocHandler {
 		return p;
 	}	
 	
-	protected static Phrase createPhrase( DocPhrase docPhrase, ITextHelper docHelper, List<Font> fontMap ) throws Exception {
+	protected static Phrase createPhrase( DocPhrase docPhrase, OpenPdfHelper docHelper, List<Font> fontMap ) throws Exception {
 		String text = createText( docHelper.getParams(), docPhrase.getText() );
 		int style = docPhrase.getStyle();
 		String fontName = docPhrase.getFontName();
@@ -208,15 +198,15 @@ public class ITextDocHandler {
 		return p;
 	}
 	
-	protected static Phrase createPhrase( DocPhrase docPhrase, ITextHelper docHelper ) throws Exception {
+	protected static Phrase createPhrase( DocPhrase docPhrase, OpenPdfHelper docHelper ) throws Exception {
 		return createPhrase(docPhrase, docHelper, null);
 	}	
 
-	protected static Paragraph createPara( DocPara docPara, ITextHelper docHelper ) throws Exception {
+	protected static Paragraph createPara( DocPara docPara, OpenPdfHelper docHelper ) throws Exception {
 		return createPara(docPara, docHelper, null);
 	}
 	
-	protected static Paragraph createPara( DocPara docPara, ITextHelper docHelper, List<Font> fontMap ) throws Exception {
+	protected static Paragraph createPara( DocPara docPara, OpenPdfHelper docHelper, List<Font> fontMap ) throws Exception {
 		int style = docPara.getStyle();
 		String text = createText( docHelper.getParams(), docPara.getText() );
 //		if ( DOC_OUTPUT_HTML.equals( this.docType ) ) {
@@ -258,139 +248,7 @@ public class ITextDocHandler {
 		return p;
 	}
 	
-	protected static Table createTable( DocTable docTable, ITextHelper docHelper ) throws Exception {
-		
-		boolean startHeader = false;
-		Table table = new Table( docTable.getColumns() );
-		table.setBorderWidth(0);	
-		table.setWidth( docTable.getWidth() );
-		table.setBorderColor( Color.black );
-		table.setPadding( docTable.getPadding() );
-		table.setSpacing( docTable.getSpacing() );
-		table.setCellsFitPage( true );
-		
-		
-		if ( docTable.getSpaceBefore() != null ) {
-			table.setSpacing( docTable.getSpaceBefore().floatValue() );
-		}
-		if ( docTable.getSpaceAfter() != null ) {
-			table.setSpacing( docTable.getSpaceAfter().floatValue() );
-		}
-		
-		int[] cw = docTable.getColWithds();
-		if (  cw != null ) {
-			float[] w = new float[ cw.length ];
-			for ( int k=0; k<w.length; k++ ) {
-				w[k] = (float)((float)cw[k]/(float)100);
-			}
-			table.setWidths( w );
-		}
-		Iterator<DocElement> itRow = docTable.docElements();
-		while ( itRow.hasNext() ) {
-			DocRow docRow = (DocRow)itRow.next();
-			Iterator<DocElement> itCell = docRow.docElements();
-			while ( itCell.hasNext() ) {
-				DocCell docCell = (DocCell)itCell.next();
-				setStyle( docTable, docCell );
-				Cell cell = new Cell();
-				if ( docCell.isHeader() ) {
-					cell.setHeader( true );
-					startHeader = true;
-				} else {
-					if ( startHeader ) {
-						startHeader = false;
-						table.endHeaders();
-					}
-				}
-				cell.setColspan( docCell.getCSpan() );
-				cell.setRowspan( docCell.getRSpan() );
-				DocBorders docBorders = docCell.getDocBorders();
-				if ( docBorders != null ) {
-					if ( docBorders.getBorderColorBottom() != null ) {
-						cell.setBorderColorBottom( DocModelUtils.parseHtmlColor( docBorders.getBorderColorBottom() ) );
-					}
-					if ( docBorders.getBorderColorTop() != null ) {
-						cell.setBorderColorTop(  DocModelUtils.parseHtmlColor( docBorders.getBorderColorTop() ) );
-					}
-					if ( docBorders.getBorderColorLeft() != null ) {
-						cell.setBorderColorLeft(  DocModelUtils.parseHtmlColor( docBorders.getBorderColorLeft() ) );
-					}
-					if ( docBorders.getBorderColorRight() != null ) {
-						cell.setBorderColorRight(  DocModelUtils.parseHtmlColor( docBorders.getBorderColorRight() ) );
-					}
-					if ( docBorders.getBorderWidthBottom() != -1 ) {
-						cell.setBorderWidthBottom( docBorders.getBorderWidthBottom() );
-					}
-					if ( docBorders.getBorderWidthTop() != -1 ) {
-						cell.setBorderWidthTop( docBorders.getBorderWidthTop() );
-					}
-					if ( docBorders.getBorderWidthLeft() != -1 ) {
-						cell.setBorderWidthLeft( docBorders.getBorderWidthLeft() );
-					}
-					if ( docBorders.getBorderWidthRight() != -1 ) {
-						cell.setBorderWidthRight( docBorders.getBorderWidthRight() );
-					}
-				}
-				if ( docCell.getBackColor() != null ) {
-					cell.setBackgroundColor( DocModelUtils.parseHtmlColor( docCell.getBackColor() ) );
-				}
-				if ( docCell.getAlign() != DocPara.ALIGN_UNSET ) {
-					Optional<HorizontalAlignment> ha = HorizontalAlignment.of( docCell.getAlign() );
-					if ( ha.isPresent() ) {
-						cell.setHorizontalAlignment( ha.get() );
-					}
-				}
-				if ( docCell.getValign() != DocPara.ALIGN_UNSET ) {
-					Optional<VerticalAlignment> va = VerticalAlignment.of( docCell.getAlign() );
-					if ( va.isPresent() ) {
-						cell.setVerticalAlignment( va.get() );
-					}
-				}				
-				CellParent cellParent = new CellParent( cell );
-				Iterator<DocElement> itCurrent = docCell.docElements();
-				List<Font> fontList = new ArrayList<>();
-				while ( itCurrent.hasNext() ) {
-					DocElement docElement = (DocElement) itCurrent.next();
-					if ( docElement instanceof DocPara ) {
-						DocPara docPara = (DocPara)docElement;
-						setStyle( docCell , docPara );
-						Paragraph paragraph = createPara( docPara, docHelper, fontList );
-						cellParent.add( paragraph );
-					} else if ( docElement instanceof DocPhrase ) {
-						DocPhrase docPhrase = (DocPhrase)docElement;
-						//setStyle( docCell , docPara );
-						cellParent.add( createPhrase( docPhrase, docHelper, fontList ) );						
-					} else if ( docElement instanceof DocTable ) {
-						LogFacade.getLog().debug( "nested table" );
-						table.insertTable( createTable( (DocTable)docElement, docHelper ) );
-					} else if ( docElement instanceof DocImage ) {
-						LogFacade.getLog().debug( "cell DocImage : "+docElement );
-						cellParent.add( createImage( (DocImage)docElement ) );
-					} else if ( docElement instanceof DocBarcode ) {
-						LogFacade.getLog().info( "cell DocBarcode : "+docElement );
-						cellParent.add( createBarcode( (DocBarcode)docElement, docHelper ) );
-					}
-				}
-				table.addCell( cell );
-				List<Element> listChunk = cell.getChunks();
-				if ( listChunk.size() == fontList.size() ) {
-					for ( int k=0; k<listChunk.size(); k++ ) {
-						Chunk c = (Chunk)listChunk.get( k );
-						Font f = (Font) fontList.get( k );
-						c.setFont( f );
-					}
-				}
-				if ( docHelper.getPdfWriter() != null ) {
-					docHelper.getPdfWriter().flush();
-				}
-			}
-		}
-
-		return table;
-	}
-	
-	
-	private static Image createBarcode( DocBarcode docBarcode, ITextHelper helper ) throws Exception {
+	protected static Image createBarcode( DocBarcode docBarcode, OpenPdfHelper helper ) throws Exception {
 		Barcode barcode = null;
 		if ( "128".equalsIgnoreCase( docBarcode.getType() ) ) {
 			barcode = new Barcode128();
@@ -407,7 +265,7 @@ public class ITextDocHandler {
 		return img;
 	}
 	
-	private static RtfHeaderFooter createRtfHeaderFooter( DocHeaderFooter docHeaderFooter, Document document, boolean header, ITextHelper docHelper ) throws Exception {
+	private static RtfHeaderFooter createRtfHeaderFooter( DocHeaderFooter docHeaderFooter, Document document, boolean header, OpenPdfHelper docHelper ) throws Exception {
 		List<DocElement> list = new ArrayList<>();
 		Iterator<DocElement> itDoc = docHeaderFooter.docElements();
 		while ( itDoc.hasNext() ) {
@@ -427,11 +285,11 @@ public class ITextDocHandler {
 		return rtfHeaderFooter;
 	}
 	
-	public static Font createFont( String fontName, int fontSize, int fontStyle, ITextHelper docHelper, String color ) throws Exception {
+	public static Font createFont( String fontName, int fontSize, int fontStyle, OpenPdfHelper docHelper, String color ) throws Exception {
 		return createFont(fontName, fontName, fontSize, fontStyle, docHelper, color);
 	}
 	
-	private static Font createFont( String fontName, String fontPath, int fontSize, int fontStyle, ITextHelper docHelper, String color ) throws Exception {
+	private static Font createFont( String fontName, String fontPath, int fontSize, int fontStyle, OpenPdfHelper docHelper, String color ) throws Exception {
 		Font font = null;
 		int size = fontSize;
 		int style = Font.NORMAL;
@@ -488,7 +346,7 @@ public class ITextDocHandler {
 		String defaultFontName = info.getProperty( DOC_DEFAULT_FONT_NAME, "helvetica" );
 		String defaultFontSize = info.getProperty( DOC_DEFAULT_FONT_SIZE, "10" );
 		String defaultFontStyle = info.getProperty( DOC_DEFAULT_FONT_STYLE, "normal" );
-		ITextHelper docHelper = new ITextHelper();
+		OpenPdfHelper docHelper = new OpenPdfHelper();
 		
 		if ( this.pdfWriter != null ) {
 			docHelper.setPdfWriter( this.pdfWriter );
@@ -584,14 +442,14 @@ public class ITextDocHandler {
 		this.document.close();
 	}
 	
-	public static void handleElements( Document document, Iterator<DocElement> itDoc, ITextHelper docHelper ) throws Exception {
+	public static void handleElements( Document document, Iterator<DocElement> itDoc, OpenPdfHelper docHelper ) throws Exception {
 		while ( itDoc.hasNext() ) {
 			DocElement docElement = (DocElement)itDoc.next();
 			getElement(document, docElement, true, docHelper );
 		}
 	}
 	
-	public static Element getElement( Document document, DocElement docElement, boolean addElement, ITextHelper docHelper ) throws Exception {
+	public static Element getElement( Document document, DocElement docElement, boolean addElement, OpenPdfHelper docHelper ) throws Exception {
 		Element result = null;
 		DocumentParent documentParent = new DocumentParent( document );
 		if ( docElement instanceof DocPhrase ) {
@@ -605,7 +463,7 @@ public class ITextDocHandler {
 				documentParent.add( result );	
 			}
 		} else if ( docElement instanceof DocTable ) {
-			result = createTable( (DocTable)docElement, docHelper );
+			result = OpenPdfDocTableHelper.createTable( (DocTable)docElement, docHelper );
 			if ( addElement ) {
 				document.add( result );	
 			}
@@ -620,7 +478,7 @@ public class ITextDocHandler {
 		return result;
 	}
 	
-	private HeaderFooter createHeaderFooter( DocHeaderFooter container, int align, ITextHelper docHelper ) throws Exception {
+	private HeaderFooter createHeaderFooter( DocHeaderFooter container, int align, OpenPdfHelper docHelper ) throws Exception {
 		Iterator<DocElement> it = container.docElements(); 
 		Phrase phrase = new Phrase();
 		float leading = (float)-1.0;

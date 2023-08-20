@@ -8,6 +8,7 @@ import org.fugerit.java.doc.base.config.DocOutput;
 import org.fugerit.java.doc.base.config.DocTypeHandler;
 import org.fugerit.java.doc.base.config.DocTypeHandlerDefault;
 import org.fugerit.java.doc.base.model.DocBase;
+import org.fugerit.java.doc.mod.openpdf.helpers.OpenPpfDocHandler;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.PageSize;
@@ -23,7 +24,7 @@ public class RtfTypeHandler extends DocTypeHandlerDefault {
 	public static final DocTypeHandler HANDLER = new RtfTypeHandler();
 	
 	public RtfTypeHandler() {
-		super( ITextDocHandler.DOC_OUTPUT_RTF, ITextDocHandler.MODULE );
+		super( OpenPpfDocHandler.DOC_OUTPUT_RTF, OpenPpfDocHandler.MODULE );
 	}
 
 	@Override
@@ -37,7 +38,7 @@ public class RtfTypeHandler extends DocTypeHandlerDefault {
 				Integer.parseInt( margins[3] ) );
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		RtfWriter2 rtfWriter2 = RtfWriter2.getInstance( document, baos );
-		ITextDocHandler handler = new ITextDocHandler( document, rtfWriter2 );
+		OpenPpfDocHandler handler = new OpenPpfDocHandler( document, rtfWriter2 );
 		handler.handleDoc( docBase );
 		baos.writeTo( outputStream );
 		baos.close();
