@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 import org.fugerit.java.core.lang.helpers.StringUtils;
@@ -69,6 +70,8 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.Table;
+import com.lowagie.text.alignment.HorizontalAlignment;
+import com.lowagie.text.alignment.VerticalAlignment;
 import com.lowagie.text.html.HtmlTags;
 import com.lowagie.text.pdf.Barcode;
 import com.lowagie.text.pdf.Barcode128;
@@ -180,15 +183,6 @@ public class ITextDocHandler {
 		return r;
 	}
 	
-	private static int getValign( int align ) {
-		int r = Element.ALIGN_TOP;
-		if ( align == DocPara.ALIGN_BOTTOM ) {
-			r = Element.ALIGN_BOTTOM;
-		} else if ( align == DocPara.ALIGN_MIDDLE ) {
-			r = Element.ALIGN_MIDDLE;	
-		}
-		return r;
-	}	
 	
 	protected static Image createImage( DocImage docImage ) throws Exception {
 		Image image = null;
@@ -370,10 +364,16 @@ public class ITextDocHandler {
 					cell.setBackgroundColor( DocModelUtils.parseHtmlColor( docCell.getBackColor() ) );
 				}
 				if ( docCell.getAlign() != DocPara.ALIGN_UNSET ) {
-					cell.setHorizontalAlignment( getAlign( docCell.getAlign() ) );
+					Optional<HorizontalAlignment> ha = HorizontalAlignment.of( docCell.getAlign() );
+					if ( ha != null && ha.isPresent() ) {
+						cell.setHorizontalAlignment( ha.get() );
+					}
 				}
 				if ( docCell.getValign() != DocPara.ALIGN_UNSET ) {
-					cell.setVerticalAlignment( getValign( docCell.getValign() ) );
+					Optional<VerticalAlignment> va = VerticalAlignment.of( docCell.getAlign() );
+					if ( va != null && va.isPresent() ) {
+						cell.setVerticalAlignment( va.get() );
+					}
 				}				
 				CellParent cellParent = new CellParent( cell );
 				Iterator<DocElement> itCurrent = docCell.docElements();
@@ -401,7 +401,6 @@ public class ITextDocHandler {
 					}
 				}
 				table.addCell( cell );
-				@SuppressWarnings("unchecked")
 				List<Element> listChunk = cell.getChunks();
 				if ( listChunk.size() == fontList.size() ) {
 					for ( int k=0; k<listChunk.size(); k++ ) {
@@ -578,7 +577,7 @@ public class ITextDocHandler {
 		DocHeader docHeader = docBase.getDocHeader();
 		if ( docHeader != null && docHeader.isUseHeader() ) {
 			if ( docHeader.isBasic() ) {
-				HeaderFooter header = this.createHeaderFoter( docHeader, docHeader.getAlign(), docHelper );
+				HeaderFooter header = this.createHeaderFooter( docHeader, docHeader.getAlign(), docHelper );
 				this.document.setHeader( header );	
 			} else {
 				if ( DOC_OUTPUT_PDF.equals( this.docType ) ) {
@@ -591,7 +590,7 @@ public class ITextDocHandler {
 		DocFooter docFooter = docBase.getDocFooter();
 		if ( docFooter != null && docFooter.isUseFooter() ) {
 			if ( docFooter.isBasic() ) {
-				HeaderFooter footer = this.createHeaderFoter( docFooter, docFooter.getAlign(), docHelper );
+				HeaderFooter footer = this.createHeaderFooter( docFooter, docFooter.getAlign(), docHelper );
 				this.document.setFooter( footer );	
 			} else {
 				if ( DOC_OUTPUT_PDF.equals( this.docType ) ) {
@@ -650,7 +649,7 @@ public class ITextDocHandler {
 		return result;
 	}
 	
-	private HeaderFooter createHeaderFoter( DocHeaderFooter container, int align, ITextHelper docHelper ) throws Exception {
+	private HeaderFooter createHeaderFooter( DocHeaderFooter container, int align, ITextHelper docHelper ) throws Exception {
 		Iterator<DocElement> it = container.docElements(); 
 		Phrase phrase = new Phrase();
 		float leading = (float)-1.0;

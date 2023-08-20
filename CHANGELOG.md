@@ -3,6 +3,7 @@
 ## version 0.2.0 - 2023-08-20
 * Updated parent version to fj-doc 1.5.0
 * Added sonar cloud quality gate
+* Removed some deprecation notice by OpenPDF
 
 ## version 0.1.0 - 2023-08-13
 * Updated parent version to fj-doc 1.4.4
