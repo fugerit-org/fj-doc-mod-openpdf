@@ -88,7 +88,7 @@ public class OpenPdfDocTableHelper {
 		List<Font> fontList = new ArrayList<>();
 		Iterator<DocElement> itCurrent = docCell.docElements();
 		while ( itCurrent.hasNext() ) {
-			DocElement docElement = (DocElement) itCurrent.next();
+			DocElement docElement = itCurrent.next();
 			if ( docElement instanceof DocPara ) {
 				DocPara docPara = (DocPara)docElement;
 				OpenPpfDocHandler.setStyle( docCell , docPara );

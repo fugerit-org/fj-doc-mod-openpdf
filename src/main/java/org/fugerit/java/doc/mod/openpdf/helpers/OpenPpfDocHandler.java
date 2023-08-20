@@ -285,55 +285,7 @@ public class OpenPpfDocHandler {
 	}
 	
 	public static Font createFont( String fontName, int fontSize, int fontStyle, OpenPdfHelper docHelper, String color ) throws Exception {
-		return createFont(fontName, fontName, fontSize, fontStyle, docHelper, color);
-	}
-	
-	private static Font createFont( String fontName, String fontPath, int fontSize, int fontStyle, OpenPdfHelper docHelper, String color ) throws Exception {
-		Font font = null;
-		int size = fontSize;
-		int style = Font.NORMAL;
-		BaseFont bf = null;
-		int bfV = -1;
-		if ( size == -1 ) {
-			size = Integer.parseInt( docHelper.getDefFontSize() );
-		}
-		if ( fontStyle == DocPara.STYLE_BOLD ) {
-			style = Font.BOLD;
-		} else if ( fontStyle == DocPara.STYLE_UNDERLINE ) {
-			style = Font.UNDERLINE;
-		} else if ( fontStyle == DocPara.STYLE_ITALIC ) {
-			style = Font.ITALIC;
-		} else if ( fontStyle == DocPara.STYLE_BOLDITALIC ) {
-			style = Font.BOLDITALIC;
-		}
-		if ( fontName == null ) {
-			fontName = docHelper.getDefFontName();
-		}
-		if ( "helvetica".equalsIgnoreCase( fontName ) ) {
-			bfV = Font.HELVETICA;
-		} else if ( "courier".equalsIgnoreCase( fontName ) ) {
-			bfV = Font.COURIER;
-		} else if ( "times-roman".equalsIgnoreCase( fontName ) ) {
-			bfV = Font.TIMES_ROMAN;
-		} else if ( "symbol".equalsIgnoreCase( fontName ) ) {
-			bfV = Font.SYMBOL;
-		} else {
-			bf = findFont( fontName );
-			if ( bf == null) {
-				bf = BaseFont.createFont( fontPath, BaseFont.CP1252, true );
-				registerFont( fontName, bf );
-			}
-		}
-		Color c = Color.BLACK;
-		if ( color != null ) {
-			c = DocModelUtils.parseHtmlColor( color );
-		}
-		if ( bfV == -1 ) {
-			font = new Font( bf, size, style, c );	
-		} else {
-			font = new Font( bfV, size, style, c );
-		}
-		return font;
+		return OpenPdfFontHelper.createFont(fontName, fontName, fontSize, fontStyle, docHelper, color);
 	}
 	
 	/* (non-Javadoc)
