@@ -25,3 +25,5 @@ dispatch failed: java.lang.UnsatisfiedLinkError: no awt in java.library.path] wi
 java.lang.UnsatisfiedLinkError: no awt in java.library.path
 	at org.graalvm.nativeimage.builder/com.oracle.svm.core.jdk.NativeLibrarySupport.loadLibraryRelative(NativeLibrarySupport.java:120) ~[na:na]
 ```
+
+[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=fugerit-org_fj-doc-mod-openpdf)](https://sonarcloud.io/summary/new_code?id=fugerit-org_fj-doc-mod-openpdf)
