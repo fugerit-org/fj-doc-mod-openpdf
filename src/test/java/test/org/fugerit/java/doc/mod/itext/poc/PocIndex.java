@@ -3,6 +3,7 @@ package test.org.fugerit.java.doc.mod.itext.poc;
 import java.awt.Color;
 import java.io.FileOutputStream;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.lowagie.text.Chunk;
@@ -24,6 +25,8 @@ public class PocIndex {
 	
 	@Test
 	public void testIndex001() throws Exception {
+		boolean ok = false;
+		
 		String dest = "target/test_index001.pdf";
 	    Document document = new Document(PageSize.A4.rotate());
 	    PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(dest));
@@ -87,6 +90,10 @@ public class PocIndex {
 	    
 	    document.close();
 
+	    ok = true;
+	    
+	    Assert.assertTrue( ok );
+	    
 	}
 		
 }
