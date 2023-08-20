@@ -1,28 +1,3 @@
-/*****************************************************************
-<copyright>
-	Fugerit Java Library org.fugerit.java.doc.base 
-
-	Copyright (c) 2019 Fugerit
-
-	All rights reserved. This program and the accompanying materials
-	are made available under the terms of the Apache License v2.0
-	which accompanies this distribution, and is available at
-	http://www.apache.org/licenses/
-	(txt version : http://www.apache.org/licenses/LICENSE-2.0.txt
-	html version : http://www.apache.org/licenses/LICENSE-2.0.html)
-
-   This product includes software developed at
-   The Apache Software Foundation (http://www.apache.org/).
-</copyright>
-*****************************************************************/
-/*
- * @(#)ITextDocHandler.java
- *
- * @project    : org.fugerit.java.doc.base
- * @package    : org.fugerit.java.doc.mod.itext
- * @creation   : 06/set/06
- * @license	   : META-INF/LICENSE.TXT
- */
 package org.fugerit.java.doc.mod.openpdf;
 
 
@@ -56,6 +31,8 @@ import org.fugerit.java.doc.base.model.DocRow;
 import org.fugerit.java.doc.base.model.DocStyle;
 import org.fugerit.java.doc.base.model.DocTable;
 import org.fugerit.java.doc.base.xml.DocModelUtils;
+import org.fugerit.java.doc.mod.openpdf.helpers.CellParent;
+import org.fugerit.java.doc.mod.openpdf.helpers.DocumentParent;
 
 import com.lowagie.text.Anchor;
 import com.lowagie.text.Cell;
@@ -85,12 +62,6 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.rtf.RtfWriter2;
 import com.lowagie.text.rtf.headerfooter.RtfHeaderFooter;
 
-/**
- * 
- *
- * @author mfranci
- *
- */
 public class ITextDocHandler {
 	
 
@@ -100,7 +71,7 @@ public class ITextDocHandler {
 	
 	public static final String PARAM_PAGE_TOTAL = "totalPage";
 	
-	public static final String PARAM_PAGE_TOTAL_FINDER = ParamFinder.DEFAULT_PRE+"totalPage"+ParamFinder.DEFAULT_POST;
+	public static final String PARAM_PAGE_TOTAL_FINDER = ParamFinder.DEFAULT_PRE+PARAM_PAGE_TOTAL+ParamFinder.DEFAULT_POST;
 	
 	private static HashMap<String, BaseFont> fonts = new HashMap<>();
 
@@ -698,60 +669,3 @@ public class ITextDocHandler {
 	
 }
 
-
-interface ParentElement {
-	
-	public void add( Element element ) throws Exception;
-	
-}
-
-class PhraseParent implements ParentElement {
-
-	private Phrase phrase;
-	
-	public PhraseParent( Phrase phrase ) {
-		this.phrase = phrase;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.fugerit.java.doc.mod.itext.ParentElement#add(com.lowagie.text.Element)
-	 */
-	public void add(Element element) throws Exception {
-		this.phrase.add( element );
-	}
-	
-}
-
-class DocumentParent implements ParentElement {
-
-	private Document document;
-	
-	public DocumentParent( Document document) {
-		this.document = document;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.fugerit.java.doc.mod.itext.ParentElement#add(com.lowagie.text.Element)
-	 */
-	public void add(Element element) throws Exception {
-		this.document.add( element );
-	}
-	
-}
-
-class CellParent implements ParentElement {
-	
-	private Cell cell;
-	
-	public CellParent( Cell cell ) {
-		this.cell = cell;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.fugerit.java.doc.mod.itext.ParentElement#add(com.lowagie.text.Element)
-	 */
-	public void add(Element element) throws Exception {
-		this.cell.addElement( element );
-	}
-	
-}
