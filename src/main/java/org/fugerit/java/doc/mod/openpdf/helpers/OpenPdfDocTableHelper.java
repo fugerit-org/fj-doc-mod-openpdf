@@ -29,33 +29,43 @@ import com.lowagie.text.alignment.VerticalAlignment;
 
 public class OpenPdfDocTableHelper {
 
+	private OpenPdfDocTableHelper() {}
+	
+	private static void handleBorderColor( DocBorders docBorders, DocCell docCell, Cell cell ) {
+		if ( docBorders.getBorderColorBottom() != null ) {
+			cell.setBorderColorBottom( DocModelUtils.parseHtmlColor( docBorders.getBorderColorBottom() ) );
+		}
+		if ( docBorders.getBorderColorTop() != null ) {
+			cell.setBorderColorTop(  DocModelUtils.parseHtmlColor( docBorders.getBorderColorTop() ) );
+		}
+		if ( docBorders.getBorderColorLeft() != null ) {
+			cell.setBorderColorLeft(  DocModelUtils.parseHtmlColor( docBorders.getBorderColorLeft() ) );
+		}
+		if ( docBorders.getBorderColorRight() != null ) {
+			cell.setBorderColorRight(  DocModelUtils.parseHtmlColor( docBorders.getBorderColorRight() ) );
+		}
+	}
+	
+	private static void handleBorderWidth( DocBorders docBorders, DocCell docCell, Cell cell ) {
+		if ( docBorders.getBorderWidthBottom() != -1 ) {
+			cell.setBorderWidthBottom( docBorders.getBorderWidthBottom() );
+		}
+		if ( docBorders.getBorderWidthTop() != -1 ) {
+			cell.setBorderWidthTop( docBorders.getBorderWidthTop() );
+		}
+		if ( docBorders.getBorderWidthLeft() != -1 ) {
+			cell.setBorderWidthLeft( docBorders.getBorderWidthLeft() );
+		}
+		if ( docBorders.getBorderWidthRight() != -1 ) {
+			cell.setBorderWidthRight( docBorders.getBorderWidthRight() );
+		}
+	}
+	
 	private static void handleBolders( DocCell docCell, Cell cell ) {
 		DocBorders docBorders = docCell.getDocBorders();
 		if ( docBorders != null ) {
-			if ( docBorders.getBorderColorBottom() != null ) {
-				cell.setBorderColorBottom( DocModelUtils.parseHtmlColor( docBorders.getBorderColorBottom() ) );
-			}
-			if ( docBorders.getBorderColorTop() != null ) {
-				cell.setBorderColorTop(  DocModelUtils.parseHtmlColor( docBorders.getBorderColorTop() ) );
-			}
-			if ( docBorders.getBorderColorLeft() != null ) {
-				cell.setBorderColorLeft(  DocModelUtils.parseHtmlColor( docBorders.getBorderColorLeft() ) );
-			}
-			if ( docBorders.getBorderColorRight() != null ) {
-				cell.setBorderColorRight(  DocModelUtils.parseHtmlColor( docBorders.getBorderColorRight() ) );
-			}
-			if ( docBorders.getBorderWidthBottom() != -1 ) {
-				cell.setBorderWidthBottom( docBorders.getBorderWidthBottom() );
-			}
-			if ( docBorders.getBorderWidthTop() != -1 ) {
-				cell.setBorderWidthTop( docBorders.getBorderWidthTop() );
-			}
-			if ( docBorders.getBorderWidthLeft() != -1 ) {
-				cell.setBorderWidthLeft( docBorders.getBorderWidthLeft() );
-			}
-			if ( docBorders.getBorderWidthRight() != -1 ) {
-				cell.setBorderWidthRight( docBorders.getBorderWidthRight() );
-			}
+			handleBorderColor(docBorders, docCell, cell);
+			handleBorderWidth(docBorders, docCell, cell);
 		}
 	}
 	

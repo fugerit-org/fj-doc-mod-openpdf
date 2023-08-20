@@ -21,7 +21,7 @@ public class PdfTypeHandler extends DocTypeHandlerDefault {
 	 */
 	private static final long serialVersionUID = 5459938865782356227L;
 	
-	public static DocTypeHandler HANDLER = new PdfTypeHandler();
+	public static final DocTypeHandler HANDLER = new PdfTypeHandler();
 	
 	public PdfTypeHandler() {
 		super( OpenPpfDocHandler.DOC_OUTPUT_PDF, OpenPpfDocHandler.MODULE );

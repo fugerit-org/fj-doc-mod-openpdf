@@ -54,7 +54,6 @@ import com.lowagie.text.rtf.headerfooter.RtfHeaderFooter;
 
 public class OpenPpfDocHandler {
 	
-
 	private static final ParamFinder PARAM_FINDER = ParamFinder.newFinder();
 	
 	public static final String PARAM_PAGE_CURRENT = "currentPage";
