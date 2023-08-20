@@ -288,6 +288,75 @@ public class OpenPpfDocHandler {
 		return OpenPdfFontHelper.createFont(fontName, fontName, fontSize, fontStyle, docHelper, color);
 	}
 	
+	private void handleTypeSpecific( Properties info ) {
+		// per documenti tipo HTML
+		if ( DOC_OUTPUT_HTML.equalsIgnoreCase( this.docType ) ) {
+			String cssLink = info.getProperty( DocInfo.INFO_NAME_CSS_LINK );
+			if ( cssLink != null ) {
+				this.document.add( new Header( HtmlTags.STYLESHEET, cssLink ) );
+			}
+		}
+		// per documenti tipo word o pdf
+		if ( DOC_OUTPUT_PDF.equalsIgnoreCase( this.docType ) || DOC_OUTPUT_RTF.equalsIgnoreCase( this.docType ) ) {
+			Rectangle size = this.document.getPageSize();
+			String pageOrient = info.getProperty( DocInfo.INFO_NAME_PAGE_ORIENT );
+			if ( pageOrient != null ) {
+				if ( "horizontal".equalsIgnoreCase( pageOrient ) ) {
+					size = new Rectangle( size.getHeight(), size.getWidth() );
+					this.document.setPageSize( size );
+				}
+			}
+			
+			if ( DOC_OUTPUT_PDF.equalsIgnoreCase( this.docType ) ) {
+				String pdfFormat = info.getProperty( DocInfo.INFO_NAME_PDF_FORMAT );
+				if ( "pdf-a".equalsIgnoreCase( pdfFormat ) ) {
+					this.pdfWriter.setPDFXConformance(PdfWriter.PDFA1B);
+					PdfDictionary outi = new PdfDictionary( PdfName.OUTPUTINTENT );
+					outi.put( PdfName.OUTPUTCONDITIONIDENTIFIER, new PdfString("sRGB IEC61966-2.1") );
+					outi.put( PdfName.INFO, new PdfString("sRGB IEC61966-2.1") );
+					outi.put( PdfName.S, PdfName.GTS_PDFA1 );
+//					FontFactory.
+//					BaseFont bf =  BaseFont.createFont( Font.HELVETICA, BaseFont.WINANSI, true );
+					this.pdfWriter.getExtraCatalog().put( PdfName.OUTPUTINTENTS, new PdfArray( outi ) );
+				}
+				
+			}
+		}		
+	}
+	
+	private void handleHeader( DocBase docBase, PdfHelper pdfHelper, OpenPdfHelper docHelper) throws Exception {
+		DocHeader docHeader = docBase.getDocHeader();
+		if ( docHeader != null && docHeader.isUseHeader() ) {
+			if ( docHeader.isBasic() ) {
+				HeaderFooter header = this.createHeaderFooter( docHeader, docHeader.getAlign(), docHelper );
+				this.document.setHeader( header );	
+			} else {
+				if ( DOC_OUTPUT_PDF.equals( this.docType ) ) {
+					pdfHelper.setDocHeader( docHeader ); 
+				} else if ( DOC_OUTPUT_RTF.equals( this.docType ) ) {
+					this.document.setHeader( new RtfHeaderFooter( createRtfHeaderFooter( docHeader , this.document, true, docHelper ) ) );
+				}
+			}
+		}
+	}
+	
+	private void handleFooter( DocBase docBase, PdfHelper pdfHelper, OpenPdfHelper docHelper) throws Exception {
+		DocFooter docFooter = docBase.getDocFooter();
+		if ( docFooter != null && docFooter.isUseFooter() ) {
+			if ( docFooter.isBasic() ) {
+				HeaderFooter footer = this.createHeaderFooter( docFooter, docFooter.getAlign(), docHelper );
+				this.document.setFooter( footer );	
+			} else {
+				if ( DOC_OUTPUT_PDF.equals( this.docType ) ) {
+					pdfHelper.setDocFooter( docFooter ); 
+				} else if ( DOC_OUTPUT_RTF.equals( this.docType ) ) {
+					this.document.setFooter( new RtfHeaderFooter( createRtfHeaderFooter( docFooter , this.document, false, docHelper ) ) );
+				}
+			}
+			
+		}	
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.fugerit.java.doc.base.DocHandler#handleDoc(org.fugerit.java.doc.base.DocBase)
 	 */
@@ -311,76 +380,12 @@ public class OpenPpfDocHandler {
 			docHelper.getParams().setProperty( PARAM_PAGE_TOTAL , String.valueOf( this.totalPageCount ) );
 		}
 		
-		// per documenti tipo HTML
-		if ( DOC_OUTPUT_HTML.equalsIgnoreCase( this.docType ) ) {
-			String cssLink = info.getProperty( DocInfo.INFO_NAME_CSS_LINK );
-			if ( cssLink != null ) {
-				this.document.add( new Header( HtmlTags.STYLESHEET, cssLink ) );
-			}
-		}
-		
-		// per documenti tipo word o pdf
-		if ( DOC_OUTPUT_PDF.equalsIgnoreCase( this.docType ) || DOC_OUTPUT_RTF.equalsIgnoreCase( this.docType ) ) {
-			Rectangle size = this.document.getPageSize();
-			String pageOrient = info.getProperty( DocInfo.INFO_NAME_PAGE_ORIENT );
-			if ( pageOrient != null ) {
-				if ( "horizontal".equalsIgnoreCase( pageOrient ) ) {
-					size = new Rectangle( size.getHeight(), size.getWidth() );
-					this.document.setPageSize( size );
-				}
-			}
-			
-			if ( DOC_OUTPUT_PDF.equalsIgnoreCase( this.docType ) ) {
-				
-				
-				String pdfFormat = info.getProperty( DocInfo.INFO_NAME_PDF_FORMAT );
-				if ( "pdf-a".equalsIgnoreCase( pdfFormat ) ) {
-					this.pdfWriter.setPDFXConformance(PdfWriter.PDFA1B);
-					PdfDictionary outi = new PdfDictionary( PdfName.OUTPUTINTENT );
-					outi.put( PdfName.OUTPUTCONDITIONIDENTIFIER, new PdfString("sRGB IEC61966-2.1") );
-					outi.put( PdfName.INFO, new PdfString("sRGB IEC61966-2.1") );
-					outi.put( PdfName.S, PdfName.GTS_PDFA1 );
-//					FontFactory.
-//					BaseFont bf =  BaseFont.createFont( Font.HELVETICA, BaseFont.WINANSI, true );
-					this.pdfWriter.getExtraCatalog().put( PdfName.OUTPUTINTENTS, new PdfArray( outi ) );
-				}
-				
-			}
-			
-			
-
-			
-		}		
+		this.handleTypeSpecific(info);
 		
 		// header / footer section
 		PdfHelper pdfHelper = new PdfHelper( docHelper );
-		DocHeader docHeader = docBase.getDocHeader();
-		if ( docHeader != null && docHeader.isUseHeader() ) {
-			if ( docHeader.isBasic() ) {
-				HeaderFooter header = this.createHeaderFooter( docHeader, docHeader.getAlign(), docHelper );
-				this.document.setHeader( header );	
-			} else {
-				if ( DOC_OUTPUT_PDF.equals( this.docType ) ) {
-					pdfHelper.setDocHeader( docHeader ); 
-				} else if ( DOC_OUTPUT_RTF.equals( this.docType ) ) {
-					this.document.setHeader( new RtfHeaderFooter( createRtfHeaderFooter( docHeader , this.document, true, docHelper ) ) );
-				}
-			}
-		}
-		DocFooter docFooter = docBase.getDocFooter();
-		if ( docFooter != null && docFooter.isUseFooter() ) {
-			if ( docFooter.isBasic() ) {
-				HeaderFooter footer = this.createHeaderFooter( docFooter, docFooter.getAlign(), docHelper );
-				this.document.setFooter( footer );	
-			} else {
-				if ( DOC_OUTPUT_PDF.equals( this.docType ) ) {
-					pdfHelper.setDocFooter( docFooter ); 
-				} else if ( DOC_OUTPUT_RTF.equals( this.docType ) ) {
-					this.document.setFooter( new RtfHeaderFooter( createRtfHeaderFooter( docFooter , this.document, false, docHelper ) ) );
-				}
-			}
-			
-		}		
+		this.handleHeader(docBase, pdfHelper, docHelper);
+		this.handleFooter(docBase, pdfHelper, docHelper);
 		if ( DOC_OUTPUT_PDF.equals( this.docType ) ) {
 			this.pdfWriter.setPageEvent( pdfHelper );
 		}
@@ -429,44 +434,47 @@ public class OpenPpfDocHandler {
 		return result;
 	}
 	
+	private void handleHeaderFooterElement( DocElement docElement, float leading, OpenPdfHelper docHelper , Phrase phrase ) throws Exception {
+		if ( docElement instanceof DocPhrase ) {
+			DocPhrase docPhrase = (DocPhrase) docElement;
+			Chunk ck = createChunk( docPhrase, docHelper );
+			if( docPhrase.getLeading() != null && docPhrase.getLeading().floatValue() != leading ) {
+				leading = docPhrase.getLeading().floatValue();
+				phrase.setLeading( leading );
+			}
+			phrase.add( ck );
+		} else  if ( docElement instanceof DocPara ) {
+			DocPara docPara = (DocPara) docElement;
+			if ( docPara.getLeading() != null ) {
+				phrase.setLeading( docPara.getLeading().floatValue() );
+			}
+			Font f = new Font( Font.HELVETICA, docPara.getSize() );
+			if ( docPara.getForeColor() != null ) {
+				try {
+					f.setColor( DocModelUtils.parseHtmlColor( docPara.getForeColor() ) );	
+				} catch (Exception fe) {
+					LogFacade.getLog().warn( "Error setting fore color on footer : "+docPara.getForeColor(), fe );
+				}
+			}
+			Chunk ck = new Chunk( docPara.getText(), f );
+			phrase.add( ck );
+		} else if ( docElement instanceof DocImage ) {
+			DocImage docImage = (DocImage)docElement;
+			Image img = createImage( docImage );
+			Chunk ck = new Chunk( img, 0, 0, true );
+			phrase.add( ck );
+		}
+	}
+	
 	private HeaderFooter createHeaderFooter( DocHeaderFooter container, int align, OpenPdfHelper docHelper ) throws Exception {
 		Iterator<DocElement> it = container.docElements(); 
 		Phrase phrase = new Phrase();
 		float leading = (float)-1.0;
 		while ( it.hasNext() ) {
-			DocElement docElement = (DocElement)it.next();
-			if ( docElement instanceof DocPhrase ) {
-				DocPhrase docPhrase = (DocPhrase) docElement;
-				Chunk ck = createChunk( docPhrase, docHelper );
-				if( docPhrase.getLeading() != null && docPhrase.getLeading().floatValue() != leading ) {
-					leading = docPhrase.getLeading().floatValue();
-					phrase.setLeading( leading );
-				}
-				phrase.add( ck );
-			} else  if ( docElement instanceof DocPara ) {
-				DocPara docPara = (DocPara) docElement;
-				if ( docPara.getLeading() != null ) {
-					phrase.setLeading( docPara.getLeading().floatValue() );
-				}
-				Font f = new Font( Font.HELVETICA, docPara.getSize() );
-				if ( docPara.getForeColor() != null ) {
-					try {
-						f.setColor( DocModelUtils.parseHtmlColor( docPara.getForeColor() ) );	
-					} catch (Exception fe) {
-						LogFacade.getLog().warn( "Error setting fore color on footer : "+docPara.getForeColor(), fe );
-					}
-				}
-				Chunk ck = new Chunk( docPara.getText(), f );
-				phrase.add( ck );
-			} else if ( docElement instanceof DocImage ) {
-				DocImage docImage = (DocImage)docElement;
-				Image img = createImage( docImage );
-				Chunk ck = new Chunk( img, 0, 0, true );
-				phrase.add( ck );
-			}
+			DocElement docElement = it.next();
+			this.handleHeaderFooterElement(docElement, leading, docHelper, phrase);
 		}
 		HeaderFooter headerFooter  = new HeaderFooter( phrase, container.isNumbered() );
-		
 		if ( align == DocPara.ALIGN_UNSET ) {
 			align = DocPara.ALIGN_CENTER;
 		}

@@ -31,7 +31,7 @@ public class OpenPdfDocTableHelper {
 
 	private OpenPdfDocTableHelper() {}
 	
-	private static void handleBorderColor( DocBorders docBorders, DocCell docCell, Cell cell ) {
+	private static void handleBorderColor( DocBorders docBorders, Cell cell ) {
 		if ( docBorders.getBorderColorBottom() != null ) {
 			cell.setBorderColorBottom( DocModelUtils.parseHtmlColor( docBorders.getBorderColorBottom() ) );
 		}
@@ -46,7 +46,7 @@ public class OpenPdfDocTableHelper {
 		}
 	}
 	
-	private static void handleBorderWidth( DocBorders docBorders, DocCell docCell, Cell cell ) {
+	private static void handleBorderWidth( DocBorders docBorders, Cell cell ) {
 		if ( docBorders.getBorderWidthBottom() != -1 ) {
 			cell.setBorderWidthBottom( docBorders.getBorderWidthBottom() );
 		}
@@ -64,8 +64,8 @@ public class OpenPdfDocTableHelper {
 	private static void handleBolders( DocCell docCell, Cell cell ) {
 		DocBorders docBorders = docCell.getDocBorders();
 		if ( docBorders != null ) {
-			handleBorderColor(docBorders, docCell, cell);
-			handleBorderWidth(docBorders, docCell, cell);
+			handleBorderColor(docBorders, cell);
+			handleBorderWidth(docBorders, cell);
 		}
 	}
 	
