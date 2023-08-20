@@ -336,13 +336,13 @@ public class ITextDocHandler {
 				}
 				if ( docCell.getAlign() != DocPara.ALIGN_UNSET ) {
 					Optional<HorizontalAlignment> ha = HorizontalAlignment.of( docCell.getAlign() );
-					if ( ha != null && ha.isPresent() ) {
+					if ( ha.isPresent() ) {
 						cell.setHorizontalAlignment( ha.get() );
 					}
 				}
 				if ( docCell.getValign() != DocPara.ALIGN_UNSET ) {
 					Optional<VerticalAlignment> va = VerticalAlignment.of( docCell.getAlign() );
-					if ( va != null && va.isPresent() ) {
+					if ( va.isPresent() ) {
 						cell.setVerticalAlignment( va.get() );
 					}
 				}				
