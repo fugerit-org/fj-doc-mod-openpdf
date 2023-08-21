@@ -1,8 +1,10 @@
+### Idea Intellij ###
+.idea/
+*.iml
+
 ### Eclipse ###
 
-#react
-
-npm
+.DS_Store
 
 .metadata
 bin/
@@ -15,6 +17,8 @@ local.properties
 .settings/
 .loadpath
 .recommenders
+
+.vscode/
 
 # Eclipse Core
 .project
@@ -101,3 +105,4 @@ buildNumber.properties
 # End of https://www.gitignore.io/api/java,maven,eclipse
 
 /.apt_generated/
+/.apt_generated_tests/
