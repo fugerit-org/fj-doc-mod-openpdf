@@ -19,12 +19,15 @@ import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
- * Questo � l'handler da usare!
+ * This is the handler to use
  * 
- * @author mttfranci
+ * @author fugerit79
  *
  */
+@Slf4j
 public class PdfHelper  extends PdfPageEventHelper {
 	
 	public PdfHelper( OpenPdfHelper docHelper ) {
@@ -65,10 +68,8 @@ public class PdfHelper  extends PdfPageEventHelper {
 		//this.baseFont = ITextDocHandler.findFont( this.docHelper.getDefFontName() );
         try {
 			this.baseFont = BaseFont.createFont( BaseFont.HELVETICA, BaseFont.WINANSI, BaseFont.EMBEDDED);
-		} catch (DocumentException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (DocumentException | IOException e) {
+			log.warn( "Error : "+e, e );
 		}
     }
  
