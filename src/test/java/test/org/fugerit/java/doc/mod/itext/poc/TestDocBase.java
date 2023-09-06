@@ -17,18 +17,21 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TestDocBase {
 
-	protected void testDocWorker( String testCase, DocTypeHandler handler ) {
+	protected boolean testDocWorker( String testCase, DocTypeHandler handler ) {
+		boolean ok = false;
 		String inputXml = "xml/"+testCase+".xml" ;
 		File outputFile = new File( "target", testCase+"."+handler.getType() );
 		log.info( "inputXml:{}, outputFile:{}", inputXml, outputFile );
 		try ( InputStreamReader reader = new InputStreamReader( ClassHelper.loadFromDefaultClassLoader( inputXml ) );
 				OutputStream os = new FileOutputStream( outputFile ) ) {
 			handler.handle( DocInput.newInput( handler.getType() , reader ) , DocOutput.newOutput(os) );
+			ok = true;
 		} catch (Exception e) {
 			String message = "Error : "+e.getMessage();
 			log.error( message , e );
 			fail( message );
 		}
+		return ok;
 	}
 	
 }

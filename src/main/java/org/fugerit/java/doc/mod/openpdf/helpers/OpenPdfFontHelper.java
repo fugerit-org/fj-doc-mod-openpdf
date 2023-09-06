@@ -1,15 +1,30 @@
 package org.fugerit.java.doc.mod.openpdf.helpers;
 
 import java.awt.Color;
+import java.io.IOException;
 
+import org.fugerit.java.core.cfg.ConfigRuntimeException;
 import org.fugerit.java.doc.base.model.DocPara;
 import org.fugerit.java.doc.base.xml.DocModelUtils;
 
+import com.lowagie.text.DocumentException;
 import com.lowagie.text.Font;
 import com.lowagie.text.pdf.BaseFont;
 
 public class OpenPdfFontHelper {
 
+	private OpenPdfFontHelper() {}
+	
+	public static BaseFont createBaseFontSafe( String name, String encoding, boolean embedded) {
+		BaseFont result = null;
+		try {
+			result = BaseFont.createFont(name, encoding, embedded);
+		} catch (DocumentException | IOException e) {
+			throw new ConfigRuntimeException( e );
+		}
+		return result;
+	}
+	
 	private static int handleFontStyle( int style, int fontStyle ) {
 		if ( fontStyle == DocPara.STYLE_BOLD ) {
 			style = Font.BOLD;

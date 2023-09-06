@@ -1,16 +1,14 @@
 package org.fugerit.java.doc.mod.openpdf.helpers;
 
-import java.io.IOException;
 import java.util.Iterator;
 
-import org.fugerit.java.core.log.LogFacade;
+import org.fugerit.java.core.cfg.ConfigRuntimeException;
 import org.fugerit.java.doc.base.model.DocElement;
 import org.fugerit.java.doc.base.model.DocFooter;
 import org.fugerit.java.doc.base.model.DocHeader;
 import org.fugerit.java.doc.base.model.DocPara;
 
 import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.BaseFont;
@@ -19,15 +17,12 @@ import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
 
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * This is the handler to use
  * 
  * @author fugerit79
  *
  */
-@Slf4j
 public class PdfHelper  extends PdfPageEventHelper {
 	
 	public PdfHelper( OpenPdfHelper docHelper ) {
@@ -53,24 +48,14 @@ public class PdfHelper  extends PdfPageEventHelper {
     	this.currentPageNumber = writer.getPageNumber();
     	this.docHelper.getParams().setProperty( OpenPpfDocHandler.PARAM_PAGE_CURRENT , String.valueOf( writer.getPageNumber() ) );
 		if ( this.getDocHeader() != null ) {
-			try {
-				OpenPpfDocHandler.handleElements( document, this.getDocHeader().docElements(), docHelper );
-			} catch (Exception e) {
-				LogFacade.getLog().error( "ITextDocHandler - PdfHelper.onStartPage : "+e );
-				throw new RuntimeException( e );
-			}
+			OpenPpfDocHandler.handleElementsSafe( document, this.getDocHeader().docElements(), docHelper );
 		}
 	}
 
 	public void onOpenDocument(PdfWriter writer, Document document) {
         totalPages = writer.getDirectContent().createTemplate(100, 100);
         totalPages.setBoundingBox( new Rectangle(-20, -20, 100, 100) );
-		//this.baseFont = ITextDocHandler.findFont( this.docHelper.getDefFontName() );
-        try {
-			this.baseFont = BaseFont.createFont( BaseFont.HELVETICA, BaseFont.WINANSI, BaseFont.EMBEDDED);
-		} catch (DocumentException | IOException e) {
-			log.warn( "Error : "+e, e );
-		}
+		this.baseFont = OpenPdfFontHelper.createBaseFontSafe(BaseFont.HELVETICA, BaseFont.WINANSI, BaseFont.EMBEDDED);
     }
  
     public void onEndPage(PdfWriter writer, Document document) {
@@ -108,46 +93,11 @@ public class PdfHelper  extends PdfPageEventHelper {
 					
 					totalOffset+= rowOffset;
 				} else {
-	    			throw new RuntimeException( "Element not allowed in footer (accepted only DocPara) : "+current );
+	    			throw new ConfigRuntimeException( "Element not allowed in footer (accepted only DocPara) : "+current );
 	    		}
 				
     		}
-            cb.endText();            
-            
-//    		while ( itElements.hasNext() ) {
-//    			DocElement current = (DocElement)itElements.next();
-//    			if ( current instanceof DocPara ) {
-//    				DocPara para = (DocPara) current;
-//    		        String originalText = para.getText();
-//    		        String text = ITextDocHandler.createText( docHelper.getParams(), originalText );
-//        		    float textBase = document.bottom() - totalOffset;
-//    		        float textSize = baseFont.getWidthPoint(text, footerTextSize);
-//    		        cb.beginText();
-//    		        cb.setFontAndSize(baseFont, footerTextSize);
-//    		        if( para.getAlign() == DocPara.ALIGN_CENTER ) {
-//    		            cb.setTextMatrix((document.right() / 2), textBase);
-//    		            cb.showText(text);
-//    		            cb.endText();
-//    		            //cb.addTemplate(totalPages, (document.right() / 2) + textSize, textBase);	
-//    		        } else if( para.getAlign() == DocPara.ALIGN_LEFT ) {
-//    		            cb.setTextMatrix(document.left(), textBase);
-//    		            cb.showText(text);
-//    		            cb.endText();
-//    		            //cb.addTemplate(totalPages, document.left() + textSize, textBase);
-//    		        } else {
-//    		            float adjust = baseFont.getWidthPoint("0", footerTextSize);
-//    		            cb.setTextMatrix(document.right() - textSize - adjust, textBase);
-//    		            cb.showText(text);
-//    		            cb.endText();
-//    		            //cb.addTemplate(totalPages, document.right() - adjust, textBase);
-//    		        }
-//    		        
-//    			} else {
-//    				throw new RuntimeException( "Element not allowed in footer (accepted only DocPara) : "+current );
-//    			}
-//    		}
-    		
- 
+            cb.endText();             
     		// restore writer state
     		cb.restoreState();
     	}

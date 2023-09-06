@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
+import org.fugerit.java.core.cfg.ConfigRuntimeException;
 import org.fugerit.java.core.lang.helpers.StringUtils;
 import org.fugerit.java.core.log.LogFacade;
 import org.fugerit.java.core.util.regex.ParamFinder;
@@ -396,6 +397,14 @@ public class OpenPpfDocHandler {
 		handleElements(document, itDoc, docHelper);
 		
 		this.document.close();
+	}
+	
+	public static void handleElementsSafe( Document document, Iterator<DocElement> itDoc, OpenPdfHelper docHelper ) {
+		try {
+			handleElements(document, itDoc, docHelper);
+		} catch (Exception e) {
+			throw new ConfigRuntimeException( e );
+		}
 	}
 	
 	public static void handleElements( Document document, Iterator<DocElement> itDoc, OpenPdfHelper docHelper ) throws Exception {

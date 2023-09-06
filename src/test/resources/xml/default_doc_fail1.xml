@@ -22,7 +22,7 @@
 	<footer-ext>
 		<para align="left">test</para>
 		<para align="center">${r"${currentPage}"} / ${r"${pageCount}"}</para>
-		<para align="right">test</para>
+		<phrase link="1"><![CDATA[King]]></phrase>
 	</footer-ext>
   </metadata>
   <body>
