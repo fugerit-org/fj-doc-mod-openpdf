@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- [Sonar cloud workflow](.github/workflows/sonarcloud-maven.yml)
+- [Maven build workflow](.github/workflows/build_maven_package.yml)
 - keep a changelog badge
 
 ### Changed

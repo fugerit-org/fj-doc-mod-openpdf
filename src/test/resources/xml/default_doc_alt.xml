@@ -13,24 +13,18 @@
 	<info name="doc-subject">fj doc venus sample source xml</info>
 	<info name="doc-author">fugerit79</info>
 	<info name="doc-language">en</info>
-	<!-- additional properties -->
-	<info name="set-total-page">true</info>
-	<info name="html-css-link">/css/test.css</info>
-	<header-ext>
-		<para align="center" fore-color="#eeeeee">header test</para>
-	</header-ext>
-	<footer-ext>
-		<para align="left">test</para>
-		<para align="center">${r"${currentPage}"} / ${r"${pageCount}"}</para>
-		<para align="right">test</para>
-	</footer-ext>
+	<!-- font must be loaded -->
+	<info name="page-orient">horizontal</info>
+	<header>
+		<phrase fore-color="#222222" leading="3" align="right">header test</phrase>
+	</header>
+	<footer>
+		<para fore-color="#222222" leading="3" align="right">${r"${currentPage}"} / ${r"${pageCount}"}</para>
+	</footer>
   </metadata>
   <body>
-  		<para font-name="times-roman" style="bold">Test times roman</para>
-  		<para font-name="courier" style="bolditalic">Courier</para>
-  		<para font-name="symbol" style="italic">Symbol</para>
-  		<para font-name="helvetica" style="underline">Symbol</para>
-  		<para size="-1" fore-color="#dddddd">Test default font</para>
+  		<image scaling="100" url="cl://test/img_test_teal.jpg"/>
+  		<phrase leading="3">My sample title</phrase>
     	<table columns="3" colwidths="30;30;40"  width="100" id="excel-table" padding="2">
     		<row>
     			<cell align="center" border-color="#000000" border-width="1"><para style="bold">Name</para></cell>
@@ -46,13 +40,22 @@
     			<cell><para><![CDATA[Thorin]]></para></cell>
     			<cell><para><![CDATA[Oakshield]]></para></cell>
     			<cell><para><![CDATA[King]]></para></cell>
-    		</row>     	
-        		<row>
-    			<cell><phrase><![CDATA[Phrase]]></phrase></cell>
-    			<cell><phrase anchor="1"><![CDATA[Oakshield]]></phrase></cell>
-    			<cell><phrase link="1"><![CDATA[King]]></phrase></cell>
-    		</row>  
+    		</row>
+       		<row>
+    			<cell><barcode text="0123456789123"/></cell>
+    			<cell><image scaling="100" url="cl://test/img_test_teal.jpg"/></cell>
+    			<cell>
+    				<table columns="2" colwidths="50;50"  width="100" id="a-table" padding="2">
+    					<row>
+    						<cell><para>1</para></cell>
+    						<cell><para>2</para></cell>
+    					</row>
+    				</table>
+    			</cell>
+    		</row>     	     	
     	</table>
   </body>
+  
+  <page-break/>
   
 </doc>

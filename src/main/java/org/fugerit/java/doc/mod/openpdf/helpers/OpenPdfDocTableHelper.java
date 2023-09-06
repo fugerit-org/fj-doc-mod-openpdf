@@ -1,12 +1,12 @@
 package org.fugerit.java.doc.mod.openpdf.helpers;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import org.fugerit.java.core.log.LogFacade;
 import org.fugerit.java.doc.base.model.DocBarcode;
 import org.fugerit.java.doc.base.model.DocBorders;
 import org.fugerit.java.doc.base.model.DocCell;
@@ -20,6 +20,7 @@ import org.fugerit.java.doc.base.xml.DocModelUtils;
 
 import com.lowagie.text.Cell;
 import com.lowagie.text.Chunk;
+import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.Paragraph;
@@ -27,6 +28,9 @@ import com.lowagie.text.Table;
 import com.lowagie.text.alignment.HorizontalAlignment;
 import com.lowagie.text.alignment.VerticalAlignment;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class OpenPdfDocTableHelper {
 
 	private OpenPdfDocTableHelper() {}
@@ -84,7 +88,7 @@ public class OpenPdfDocTableHelper {
 		}
 	}
 	
-	private static List<Font> handleContent( Table table, CellParent cellParent, DocCell docCell, Cell cell, OpenPdfHelper docHelper ) throws Exception {
+	private static List<Font> handleContent( Table table, CellParent cellParent, DocCell docCell, Cell cell, OpenPdfHelper docHelper ) throws DocumentException, IOException {
 		List<Font> fontList = new ArrayList<>();
 		Iterator<DocElement> itCurrent = docCell.docElements();
 		while ( itCurrent.hasNext() ) {
@@ -96,23 +100,20 @@ public class OpenPdfDocTableHelper {
 				cellParent.add( paragraph );
 			} else if ( docElement instanceof DocPhrase ) {
 				DocPhrase docPhrase = (DocPhrase)docElement;
-				//setStyle( docCell , docPara );
+				log.trace( "docCell -> {}, docPara : {}", docCell, cell );
 				cellParent.add( OpenPpfDocHandler.createPhrase( docPhrase, docHelper, fontList ) );						
 			} else if ( docElement instanceof DocTable ) {
-				LogFacade.getLog().debug( "nested table" );
 				table.insertTable( createTable( (DocTable)docElement, docHelper ) );
 			} else if ( docElement instanceof DocImage ) {
-				LogFacade.getLog().debug( "cell DocImage : "+docElement );
 				cellParent.add( OpenPpfDocHandler.createImage( (DocImage)docElement ) );
 			} else if ( docElement instanceof DocBarcode ) {
-				LogFacade.getLog().info( "cell DocBarcode : "+docElement );
 				cellParent.add( OpenPpfDocHandler.createBarcode( (DocBarcode)docElement, docHelper ) );
 			}
 		}
 		return fontList;
 	}
 	
-	private static boolean handleCell( Table table, DocCell docCell, boolean startHeader, DocTable docTable, OpenPdfHelper docHelper ) throws Exception {
+	private static boolean handleCell( Table table, DocCell docCell, boolean startHeader, DocTable docTable, OpenPdfHelper docHelper ) throws DocumentException, IOException {
 		OpenPpfDocHandler.setStyle( docTable, docCell );
 		Cell cell = new Cell();
 		if ( docCell.isHeader() ) {
@@ -144,7 +145,7 @@ public class OpenPdfDocTableHelper {
 		if ( listChunk.size() == fontList.size() ) {
 			for ( int k=0; k<listChunk.size(); k++ ) {
 				Chunk c = (Chunk)listChunk.get( k );
-				Font f = (Font) fontList.get( k );
+				Font f = fontList.get( k );
 				c.setFont( f );
 			}
 		}
@@ -154,7 +155,7 @@ public class OpenPdfDocTableHelper {
 		return startHeader;
 	}
 	
-	protected static Table createTable( DocTable docTable, OpenPdfHelper docHelper ) throws Exception {
+	protected static Table createTable( DocTable docTable, OpenPdfHelper docHelper ) throws DocumentException, IOException {
 		
 		boolean startHeader = false;
 		Table table = new Table( docTable.getColumns() );
@@ -176,7 +177,7 @@ public class OpenPdfDocTableHelper {
 		if (  cw != null ) {
 			float[] w = new float[ cw.length ];
 			for ( int k=0; k<w.length; k++ ) {
-				w[k] = (float)((float)cw[k]/(float)100);
+				w[k] = ((float)cw[k]/(float)100);
 			}
 			table.setWidths( w );
 		}
