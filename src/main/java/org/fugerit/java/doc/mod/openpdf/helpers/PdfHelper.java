@@ -44,6 +44,7 @@ public class PdfHelper  extends PdfPageEventHelper {
 	
 	private DocFooter docFooter;
     
+	@Override
     public void onStartPage(PdfWriter writer, Document document) {
     	this.currentPageNumber = writer.getPageNumber();
     	this.docHelper.getParams().setProperty( OpenPpfDocHandler.PARAM_PAGE_CURRENT , String.valueOf( writer.getPageNumber() ) );
@@ -52,12 +53,14 @@ public class PdfHelper  extends PdfPageEventHelper {
 		}
 	}
 
+	@Override
 	public void onOpenDocument(PdfWriter writer, Document document) {
         totalPages = writer.getDirectContent().createTemplate(100, 100);
         totalPages.setBoundingBox( new Rectangle(-20, -20, 100, 100) );
 		this.baseFont = OpenPdfFontHelper.createBaseFontSafe(BaseFont.HELVETICA, BaseFont.WINANSI, BaseFont.EMBEDDED);
     }
  
+	@Override
     public void onEndPage(PdfWriter writer, Document document) {
     	if ( this.getDocFooter() != null && !this.getDocFooter().isBasic() ) {
     		// allocate direct writer
@@ -69,26 +72,23 @@ public class PdfHelper  extends PdfPageEventHelper {
 	        cb.beginText();
 	        cb.setFontAndSize(baseFont, footerTextSize);
     		while ( itElements.hasNext() ) {
-				DocElement current = (DocElement)itElements.next();
+				DocElement current = itElements.next();
 				if ( current instanceof DocPara ) {
-					DocPara para = (DocPara) current;;
+					DocPara para = (DocPara) current;
 					String text = OpenPpfDocHandler.createText( docHelper.getParams(), para.getText() );
 					float textSize = baseFont.getWidthPoint(text, footerTextSize);
 					float textBase = document.bottom() - totalOffset;
 					int rowOffset = 10;
 					if( para.getAlign() == DocPara.ALIGN_CENTER ) {
 						cb.setTextMatrix((document.right() / 2), textBase);
-						cb.showText(text);
-						//	cb.addTemplate(totalPages, (document.right() / 2) + textSize, textBase);	
+						cb.showText(text);	
 					} else if( para.getAlign() == DocPara.ALIGN_LEFT ) {
 						cb.setTextMatrix(document.left(), textBase);
 						cb.showText(text);
-						//	cb.addTemplate(totalPages, document.left() + textSize, textBase);
 					} else {
 						float adjust = baseFont.getWidthPoint("0", footerTextSize);
 						cb.setTextMatrix(document.right() - textSize - adjust, textBase);
 						cb.showText(text);
-						//	cb.addTemplate(totalPages, document.right() - adjust, textBase);
 					}
 					
 					totalOffset+= rowOffset;
@@ -101,9 +101,9 @@ public class PdfHelper  extends PdfPageEventHelper {
     		// restore writer state
     		cb.restoreState();
     	}
-
     }
  
+	@Override
     public void onCloseDocument(PdfWriter writer, Document document) {
         totalPages.beginText();
         totalPages.setFontAndSize(baseFont, footerTextSize);
@@ -115,8 +115,6 @@ public class PdfHelper  extends PdfPageEventHelper {
     public void setPageNumberAlignment(int pageNumberAlignment) {
         this.pageNumberAlignment = pageNumberAlignment;
     }
-
-
 
 	public DocHeader getDocHeader() {
 		return docHeader;

@@ -2,6 +2,7 @@ package org.fugerit.java.doc.mod.openpdf.helpers;
 
 
 import java.awt.Color;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,8 +31,10 @@ import org.fugerit.java.doc.base.model.DocTable;
 import org.fugerit.java.doc.base.xml.DocModelUtils;
 
 import com.lowagie.text.Anchor;
+import com.lowagie.text.BadElementException;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.Header;
@@ -53,6 +56,9 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.rtf.RtfWriter2;
 import com.lowagie.text.rtf.headerfooter.RtfHeaderFooter;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class OpenPpfDocHandler {
 	
 	private static final ParamFinder PARAM_FINDER = ParamFinder.newFinder();
@@ -65,7 +71,7 @@ public class OpenPpfDocHandler {
 	
 	private static HashMap<String, BaseFont> fonts = new HashMap<>();
 
-	public static void registerFont( String name, String path ) throws Exception {
+	public static void registerFont( String name, String path ) throws DocumentException, IOException {
 		BaseFont font = BaseFont.createFont( path, BaseFont.CP1252, true );
 		registerFont( name, font );
 	}
@@ -75,8 +81,7 @@ public class OpenPpfDocHandler {
 	}
 	
 	public static BaseFont findFont( String name ) {
-		BaseFont res = (BaseFont)fonts.get( name );
-		return res;
+		return fonts.get( name );
 	}
 	
 	protected static void setStyle( DocStyle parent, DocStyle current ) {
@@ -90,29 +95,27 @@ public class OpenPpfDocHandler {
 		
 	private PdfWriter pdfWriter;
 	
-	//private RtfWriter2 rtfWriter2;
-	
 	private Document document;
 	
 	private String docType;
 	
-	public final static String MODULE = "itext";
+	public static final String MODULE = "itext";
 	
-	public final static String DOC_OUTPUT_HTML = DocConfig.TYPE_HTML;
+	public static final String DOC_OUTPUT_HTML = DocConfig.TYPE_HTML;
 	
-	public final static String DOC_OUTPUT_PDF = DocConfig.TYPE_PDF;
+	public static final String DOC_OUTPUT_PDF = DocConfig.TYPE_PDF;
 	
-	public final static String DOC_OUTPUT_RTF = DocConfig.TYPE_RTF;
+	public static final String DOC_OUTPUT_RTF = DocConfig.TYPE_RTF;
 	
-	public final static String DOC_DEFAULT_FONT_NAME = "default-font-name";
-	public final static String DOC_DEFAULT_FONT_SIZE = "default-font-size";
-	public final static String DOC_DEFAULT_FONT_STYLE = "default-font-style";
+	public static final String DOC_DEFAULT_FONT_NAME = "default-font-name";
+	public static final String DOC_DEFAULT_FONT_SIZE = "default-font-size";
+	public static final String DOC_DEFAULT_FONT_STYLE = "default-font-style";
 
 	private int totalPageCount; 
 	
 	public OpenPpfDocHandler( Document document, RtfWriter2 rtfWriter2 ) {
 		this( document, DOC_OUTPUT_RTF );
-		//this.rtfWriter2 = rtfWriter2;
+		log.trace( "currently unused parameter rtfWriter2 {}", rtfWriter2 );
 	}	
 	
 	public OpenPpfDocHandler( Document document, PdfWriter pdfWriter ) {
@@ -145,9 +148,10 @@ public class OpenPpfDocHandler {
 	}
 	
 	
-	protected static Image createImage( DocImage docImage ) throws Exception {
+	protected static Image createImage( DocImage docImage ) {
 		Image image = null;
 		String url = docImage.getUrl();
+		log.trace( "currently unsupported image param url {}", url );
 		try {
 			byte[] data = SourceResolverHelper.resolveImage( docImage );
 			image = Image.getInstance( data );
@@ -155,8 +159,7 @@ public class OpenPpfDocHandler {
 				image.scalePercent( docImage.getScaling().floatValue() );
 			}
 		} catch (Exception e) {
-			LogFacade.getLog().error( "ITextDocHandler.createImage() Error loading image url : "+url, e );
-			throw e;
+			throw new ConfigRuntimeException( e );
 		}
 		return image;
 	}	
@@ -166,16 +169,15 @@ public class OpenPpfDocHandler {
 		return PARAM_FINDER.substitute( text , params );
 	}
 	
-	protected static Chunk createChunk( DocPhrase docPhrase, OpenPdfHelper docHelper ) throws Exception {
+	protected static Chunk createChunk( DocPhrase docPhrase, OpenPdfHelper docHelper ) throws DocumentException, IOException {
 		String text = createText( docHelper.getParams(), docPhrase.getText() );
 		int style = docPhrase.getStyle();
 		String fontName = docPhrase.getFontName();
 		Font f = createFont(fontName, docPhrase.getSize(), style, docHelper, docPhrase.getForeColor() );
-		Chunk p = new Chunk( text, f );
-		return p;
+		return new Chunk( text, f );
 	}	
 	
-	protected static Phrase createPhrase( DocPhrase docPhrase, OpenPdfHelper docHelper, List<Font> fontMap ) throws Exception {
+	protected static Phrase createPhrase( DocPhrase docPhrase, OpenPdfHelper docHelper, List<Font> fontMap ) throws DocumentException, IOException {
 		String text = createText( docHelper.getParams(), docPhrase.getText() );
 		int style = docPhrase.getStyle();
 		String fontName = docPhrase.getFontName();
@@ -198,26 +200,17 @@ public class OpenPpfDocHandler {
 		return p;
 	}
 	
-	protected static Phrase createPhrase( DocPhrase docPhrase, OpenPdfHelper docHelper ) throws Exception {
+	protected static Phrase createPhrase( DocPhrase docPhrase, OpenPdfHelper docHelper ) throws DocumentException, IOException {
 		return createPhrase(docPhrase, docHelper, null);
 	}	
 
-	protected static Paragraph createPara( DocPara docPara, OpenPdfHelper docHelper ) throws Exception {
+	protected static Paragraph createPara( DocPara docPara, OpenPdfHelper docHelper ) throws DocumentException, IOException {
 		return createPara(docPara, docHelper, null);
 	}
 	
-	protected static Paragraph createPara( DocPara docPara, OpenPdfHelper docHelper, List<Font> fontMap ) throws Exception {
+	protected static Paragraph createPara( DocPara docPara, OpenPdfHelper docHelper, List<Font> fontMap ) throws DocumentException, IOException {
 		int style = docPara.getStyle();
 		String text = createText( docHelper.getParams(), docPara.getText() );
-//		if ( DOC_OUTPUT_HTML.equals( this.docType ) ) {
-//			int count = 0;
-//			StringBuffer buffer = new StringBuffer();
-//			while ( count < text.length() && text.indexOf( " " )==count ) {
-//				count++;
-//			}
-//			buffer.append( text.substring( count ) );
-//			text = buffer.toString();
-//		}
 		String fontName = docPara.getFontName();
 		Font f = createFont(fontName, docPara.getSize(), style, docHelper, docPara.getForeColor() );
 		Phrase phrase = new Phrase( text, f );
@@ -226,7 +219,6 @@ public class OpenPpfDocHandler {
 			Color c = DocModelUtils.parseHtmlColor( docPara.getForeColor() );
 			Font f1 = new Font( f.getFamily(), f.getSize(), f.getStyle(), c );
 			p = new Paragraph( new Phrase( text, f1 ) );
-			//f = f1;
 		}
 		if ( docPara.getAlign() != DocPara.ALIGN_UNSET ) {
 			p.setAlignment( getAlign( docPara.getAlign() ) );
@@ -248,7 +240,8 @@ public class OpenPpfDocHandler {
 		return p;
 	}
 	
-	protected static Image createBarcode( DocBarcode docBarcode, OpenPdfHelper helper ) throws Exception {
+	protected static Image createBarcode( DocBarcode docBarcode, OpenPdfHelper helper ) throws BadElementException, IOException  {
+		log.trace( "currently unused parameter helper : {}", helper );
 		Barcode barcode = null;
 		if ( "128".equalsIgnoreCase( docBarcode.getType() ) ) {
 			barcode = new Barcode128();
@@ -261,11 +254,10 @@ public class OpenPpfDocHandler {
 		barcode.setCode( docBarcode.getText() );
 		barcode.setAltText( docBarcode.getText() );
 		java.awt.Image awtImage = barcode.createAwtImage( Color.white, Color.black );
-		Image img = Image.getInstance( awtImage, null );
-		return img;
+		return Image.getInstance( awtImage, null );
 	}
 	
-	private static RtfHeaderFooter createRtfHeaderFooter( DocHeaderFooter docHeaderFooter, Document document, boolean header, OpenPdfHelper docHelper ) throws Exception {
+	private static RtfHeaderFooter createRtfHeaderFooter( DocHeaderFooter docHeaderFooter, Document document, boolean header, OpenPdfHelper docHelper ) throws DocumentException, IOException {
 		List<DocElement> list = new ArrayList<>();
 		Iterator<DocElement> itDoc = docHeaderFooter.docElements();
 		while ( itDoc.hasNext() ) {
@@ -273,7 +265,7 @@ public class OpenPpfDocHandler {
 		}
 		Element[] e = new Element[ list.size() ];
 		for ( int k=0; k<list.size(); k++ ) {
-			e[k] = (Element)getElement( document, (DocElement)list.get( k ) , false, docHelper );
+			e[k] = getElement( document, list.get( k ) , false, docHelper );
 		}
 		RtfHeaderFooter rtfHeaderFooter = new RtfHeaderFooter( e );
 		rtfHeaderFooter.setDisplayAt( RtfHeaderFooter.DISPLAY_ALL_PAGES );
@@ -285,7 +277,7 @@ public class OpenPpfDocHandler {
 		return rtfHeaderFooter;
 	}
 	
-	public static Font createFont( String fontName, int fontSize, int fontStyle, OpenPdfHelper docHelper, String color ) throws Exception {
+	public static Font createFont( String fontName, int fontSize, int fontStyle, OpenPdfHelper docHelper, String color ) throws DocumentException, IOException {
 		return OpenPdfFontHelper.createFont(fontName, fontName, fontSize, fontStyle, docHelper, color);
 	}
 	
@@ -301,13 +293,10 @@ public class OpenPpfDocHandler {
 		if ( DOC_OUTPUT_PDF.equalsIgnoreCase( this.docType ) || DOC_OUTPUT_RTF.equalsIgnoreCase( this.docType ) ) {
 			Rectangle size = this.document.getPageSize();
 			String pageOrient = info.getProperty( DocInfo.INFO_NAME_PAGE_ORIENT );
-			if ( pageOrient != null ) {
-				if ( "horizontal".equalsIgnoreCase( pageOrient ) ) {
-					size = new Rectangle( size.getHeight(), size.getWidth() );
-					this.document.setPageSize( size );
-				}
+			if ( "horizontal".equalsIgnoreCase( pageOrient ) ) {
+				size = new Rectangle( size.getHeight(), size.getWidth() );
+				this.document.setPageSize( size );
 			}
-			
 			if ( DOC_OUTPUT_PDF.equalsIgnoreCase( this.docType ) ) {
 				String pdfFormat = info.getProperty( DocInfo.INFO_NAME_PDF_FORMAT );
 				if ( "pdf-a".equalsIgnoreCase( pdfFormat ) ) {
@@ -316,8 +305,6 @@ public class OpenPpfDocHandler {
 					outi.put( PdfName.OUTPUTCONDITIONIDENTIFIER, new PdfString("sRGB IEC61966-2.1") );
 					outi.put( PdfName.INFO, new PdfString("sRGB IEC61966-2.1") );
 					outi.put( PdfName.S, PdfName.GTS_PDFA1 );
-//					FontFactory.
-//					BaseFont bf =  BaseFont.createFont( Font.HELVETICA, BaseFont.WINANSI, true );
 					this.pdfWriter.getExtraCatalog().put( PdfName.OUTPUTINTENTS, new PdfArray( outi ) );
 				}
 				
@@ -325,7 +312,7 @@ public class OpenPpfDocHandler {
 		}		
 	}
 	
-	private void handleHeader( DocBase docBase, PdfHelper pdfHelper, OpenPdfHelper docHelper) throws Exception {
+	private void handleHeader( DocBase docBase, PdfHelper pdfHelper, OpenPdfHelper docHelper) throws DocumentException, IOException {
 		DocHeader docHeader = docBase.getDocHeader();
 		if ( docHeader != null && docHeader.isUseHeader() ) {
 			if ( docHeader.isBasic() ) {
@@ -341,7 +328,7 @@ public class OpenPpfDocHandler {
 		}
 	}
 	
-	private void handleFooter( DocBase docBase, PdfHelper pdfHelper, OpenPdfHelper docHelper) throws Exception {
+	private void handleFooter( DocBase docBase, PdfHelper pdfHelper, OpenPdfHelper docHelper) throws DocumentException, IOException {
 		DocFooter docFooter = docBase.getDocFooter();
 		if ( docFooter != null && docFooter.isUseFooter() ) {
 			if ( docFooter.isBasic() ) {
@@ -361,7 +348,7 @@ public class OpenPpfDocHandler {
 	/* (non-Javadoc)
 	 * @see org.fugerit.java.doc.base.DocHandler#handleDoc(org.fugerit.java.doc.base.DocBase)
 	 */
-	public void handleDoc(DocBase docBase) throws Exception {
+	public void handleDoc(DocBase docBase) throws DocumentException, IOException {
 		Properties info = docBase.getInfo();
 		
 		String defaultFontName = info.getProperty( DOC_DEFAULT_FONT_NAME, "helvetica" );
@@ -407,14 +394,14 @@ public class OpenPpfDocHandler {
 		}
 	}
 	
-	public static void handleElements( Document document, Iterator<DocElement> itDoc, OpenPdfHelper docHelper ) throws Exception {
+	public static void handleElements( Document document, Iterator<DocElement> itDoc, OpenPdfHelper docHelper ) throws DocumentException, IOException {
 		while ( itDoc.hasNext() ) {
-			DocElement docElement = (DocElement)itDoc.next();
+			DocElement docElement = itDoc.next();
 			getElement(document, docElement, true, docHelper );
 		}
 	}
 	
-	public static Element getElement( Document document, DocElement docElement, boolean addElement, OpenPdfHelper docHelper ) throws Exception {
+	public static Element getElement( Document document, DocElement docElement, boolean addElement, OpenPdfHelper docHelper ) throws DocumentException, IOException {
 		Element result = null;
 		DocumentParent documentParent = new DocumentParent( document );
 		if ( docElement instanceof DocPhrase ) {
@@ -443,7 +430,7 @@ public class OpenPpfDocHandler {
 		return result;
 	}
 	
-	private void handleHeaderFooterElement( DocElement docElement, float leading, OpenPdfHelper docHelper , Phrase phrase ) throws Exception {
+	private void handleHeaderFooterElement( DocElement docElement, float leading, OpenPdfHelper docHelper , Phrase phrase ) throws DocumentException, IOException {
 		if ( docElement instanceof DocPhrase ) {
 			DocPhrase docPhrase = (DocPhrase) docElement;
 			Chunk ck = createChunk( docPhrase, docHelper );
@@ -475,7 +462,7 @@ public class OpenPpfDocHandler {
 		}
 	}
 	
-	private HeaderFooter createHeaderFooter( DocHeaderFooter container, int align, OpenPdfHelper docHelper ) throws Exception {
+	private HeaderFooter createHeaderFooter( DocHeaderFooter container, int align, OpenPdfHelper docHelper ) throws DocumentException, IOException {
 		Iterator<DocElement> it = container.docElements(); 
 		Phrase phrase = new Phrase();
 		float leading = (float)-1.0;
@@ -489,7 +476,6 @@ public class OpenPpfDocHandler {
 		}
 		headerFooter.setAlignment( getAlign( align ) );
 		headerFooter.setBorder( container.getBorderWidth() );
-		//headerFooter.setUseVariableBorders( true );
 		return headerFooter;
 	}
 	
