@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- fj-doc version set to 2.0.2
+- fj-doc version set to 3.0.4
 - changelog format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [1.0.0] - 2023-08-30
