@@ -8,6 +8,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.fugerit.java/fj-doc-mod-openpdf.svg)](https://mvnrepository.com/artifact/org.fugerit.java/fj-doc-mod-openpdf) 
 [![license](https://img.shields.io/badge/License-Apache%20License%202.0-teal.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=fugerit-org_fj-doc-mod-openpdf&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=fugerit-org_fj-doc-mod-openpdf)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=fugerit-org_fj-doc-mod-openpdf&metric=coverage)](https://sonarcloud.io/summary/new_code?id=fugerit-org_fj-doc-mod-openpdf)
 
 *Description* :  
 Type handlers for generating documents in PDF, RTF and HTML formats using [OpenPDF](https://github.com/LibrePDF/OpenPDF) / [OpenRTF](https://github.com/LibrePDF/OpenRTF) (which is basically a fork of itext project)
@@ -30,5 +31,3 @@ dispatch failed: java.lang.UnsatisfiedLinkError: no awt in java.library.path] wi
 java.lang.UnsatisfiedLinkError: no awt in java.library.path
 	at org.graalvm.nativeimage.builder/com.oracle.svm.core.jdk.NativeLibrarySupport.loadLibraryRelative(NativeLibrarySupport.java:120) ~[na:na]
 ```
-
-[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=fugerit-org_fj-doc-mod-openpdf)](https://sonarcloud.io/summary/new_code?id=fugerit-org_fj-doc-mod-openpdf)
