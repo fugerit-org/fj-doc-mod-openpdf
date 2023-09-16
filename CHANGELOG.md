@@ -7,10 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0-sa.1] - 2023-09-16
+
 ### Added
 
 - [Sonar cloud workflow](.github/workflows/sonarcloud-maven.yml)
 - [Maven build workflow](.github/workflows/build_maven_package.yml)
+- [workflow deploy on branch deploy](.github/workflows/deploy_maven_package.yml)
 - Sonar Cloud coverage badge
 - keep a changelog badge
 
