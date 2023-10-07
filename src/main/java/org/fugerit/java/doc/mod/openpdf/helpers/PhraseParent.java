@@ -14,7 +14,7 @@ public class PhraseParent implements ParentElement {
 	/* (non-Javadoc)
 	 * @see org.fugerit.java.doc.mod.itext.ParentElement#add(com.lowagie.text.Element)
 	 */
-	public void add(Element element) throws Exception {
+	public void add(Element element) {
 		this.phrase.add( element );
 	}
 	
