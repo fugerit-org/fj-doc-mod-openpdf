@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- document metadata handling (doc-title, doc-author, doc-language, doc-subject, doc-creator)
+
 ### Changed
 
 - fj-doc version set to 3.1.3

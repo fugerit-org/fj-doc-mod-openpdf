@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.function.Consumer;
 
 import org.fugerit.java.core.cfg.ConfigRuntimeException;
 import org.fugerit.java.core.lang.helpers.StringUtils;
@@ -28,6 +29,7 @@ import org.fugerit.java.doc.base.model.DocPara;
 import org.fugerit.java.doc.base.model.DocPhrase;
 import org.fugerit.java.doc.base.model.DocStyle;
 import org.fugerit.java.doc.base.model.DocTable;
+import org.fugerit.java.doc.base.typehelper.generic.GenericConsts;
 import org.fugerit.java.doc.base.xml.DocModelUtils;
 
 import com.lowagie.text.Anchor;
@@ -345,11 +347,24 @@ public class OpenPpfDocHandler {
 		}	
 	}
 	
+	private void applyIfNotEmpty( String value, Consumer<String> c ) {
+		if ( StringUtils.isNotEmpty( value ) ) {
+			c.accept(value);
+		}
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.fugerit.java.doc.base.DocHandler#handleDoc(org.fugerit.java.doc.base.DocBase)
 	 */
 	public void handleDoc(DocBase docBase) throws DocumentException, IOException {
 		Properties info = docBase.getInfo();
+		
+		// set document metadata
+		applyIfNotEmpty( docBase.getStableInfo().getProperty( GenericConsts.INFO_KEY_DOC_TITLE ) , s -> this.document.addTitle( s ) );
+		applyIfNotEmpty( docBase.getStableInfo().getProperty( GenericConsts.INFO_KEY_DOC_AUTHOR ) , s -> this.document.addAuthor( s ) );
+		applyIfNotEmpty( docBase.getStableInfo().getProperty( GenericConsts.INFO_KEY_DOC_SUBJECT ) , s -> this.document.addSubject( s ) );
+		applyIfNotEmpty( docBase.getStableInfo().getProperty( GenericConsts.INFO_KEY_DOC_CREATOR ) , s -> this.document.addCreator( s ) );
+		applyIfNotEmpty( docBase.getStableInfo().getProperty( GenericConsts.INFO_KEY_DOC_LANGUAGE ) , s -> this.document.setDocumentLanguage( s ) );
 		
 		String defaultFontName = info.getProperty( DOC_DEFAULT_FONT_NAME, "helvetica" );
 		String defaultFontSize = info.getProperty( DOC_DEFAULT_FONT_SIZE, "10" );
