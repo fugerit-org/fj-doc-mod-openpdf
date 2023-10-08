@@ -1,187 +1,139 @@
 package org.fugerit.java.doc.mod.openpdf.events;
-/*
- * $Id: PageNumbersWatermark.java 3838 2009-04-07 18:34:15Z mstorer $
- *
- * This code is part of the 'OpenPDF Tutorial'.
- * You can find the complete tutorial at the following address:
- * https://github.com/LibrePDF/OpenPDF/wiki/Tutorial
- *
- * This code is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- *  
- */
 
-import java.awt.Color;
-import java.io.FileOutputStream;
+import org.fugerit.java.core.function.SafeFunction;
+import org.fugerit.java.doc.base.model.DocBase;
+import org.fugerit.java.doc.base.model.DocElement;
+import org.fugerit.java.doc.base.model.DocPara;
+import org.fugerit.java.doc.base.model.DocPhrase;
+import org.fugerit.java.doc.mod.openpdf.helpers.PageNumberHelper;
 
-import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
-import com.lowagie.text.Element;
-
-import com.lowagie.text.Font;
-import com.lowagie.text.Image;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
-import com.lowagie.text.ExceptionConverter;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfGState;
-import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
+
+import lombok.Getter;
+
 /**
- * Demonstrates the use of templates to add Watermarks and Pagenumbers.
+ * <p>
+ * Event Helper for ${currentPage} and ${pageCount} properties
+ * </p>
+ * 
+ * <p>
+ * Adapted from :
+ * https://github.com/LibrePDF/OpenPDF/blob/master/pdf-toolbox/src/test/java/com/lowagie/examples/directcontent/pageevents/PageNumbersWatermark.java
+ * </p>
+ * 
  */
 public class PageNumbersEventHandler extends PdfPageEventHelper {
 
-    /** The headertable. */
-    public PdfPTable table;
-    /** The Graphic state */
-    public PdfGState gstate;
-    /** A template that will hold the total number of pages. */
-    public PdfTemplate tpl;
-    /** The font that will be used. */
-    public BaseFont helv;
-    
-    /**
-     * Generates a document with a header containing Page x of y and with a Watermark on every page.
-     * @param args no arguments needed
-     */
-    public static void main(String[] args) {
-        try {
-            // step 1: creating the document
-            Document doc = new Document(PageSize.A4, 50, 50, 100, 72);
-            // step 2: creating the writer
-            PdfWriter writer = PdfWriter.getInstance(doc, new FileOutputStream("pageNumbersWatermark.pdf"));
-            // step 3: initialisations + opening the document
-            writer.setPageEvent(new PageNumbersEventHandler());
-            doc.open();
-            // step 4: adding content
-            String text = "some padding text ";
-            for (int k = 0; k < 10; ++k)
-                text += text;
-            Paragraph p = new Paragraph(text);
-            p.setAlignment(Element.ALIGN_JUSTIFIED);
-            doc.add(p);
-            // step 5: closing the document
-            doc.close();
-        }
-        catch ( Exception e ) {
-            e.printStackTrace();
-        }
-    }
-    
-    /**
-     * @see com.lowagie.text.pdf.PdfPageEventHelper#onOpenDocument(com.lowagie.text.pdf.PdfWriter, com.lowagie.text.Document)
-     */
-    public void onOpenDocument(PdfWriter writer, Document document) {
-        try {
-            table = new PdfPTable(2);
-            Phrase p = new Phrase();
-            Chunk ck = new Chunk("lowagie.com\n", new Font(Font.TIMES_ROMAN, 16, Font.BOLDITALIC, Color.blue));
-            p.add(ck);
-            ck = new Chunk("Ghent\nBelgium", new Font(Font.HELVETICA, 12, Font.NORMAL, Color.darkGray));
-            p.add(ck);
-            table.getDefaultCell().setBackgroundColor(Color.yellow);
-            table.getDefaultCell().setBorderWidth(0);
-            table.addCell(p);
-            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            table.addCell(new Phrase("Image"));
-            // initialization of the Graphic State
-            gstate = new PdfGState();
-            gstate.setFillOpacity(0.3f);
-            gstate.setStrokeOpacity(0.3f);
-            // initialization of the template
-            tpl = writer.getDirectContent().createTemplate(100, 100);
-            tpl.setBoundingBox(new Rectangle(-20, -20, 100, 100));
-            // initialization of the font
-            helv = BaseFont.createFont("Helvetica", BaseFont.WINANSI, false);
-        }
-        catch(Exception e) {
-            throw new ExceptionConverter(e);
-        }
-    }    
-    
-    /**
-     * @see com.lowagie.text.pdf.PdfPageEventHelper#onEndPage(com.lowagie.text.pdf.PdfWriter, com.lowagie.text.Document)
-     */
-    public void onEndPage(PdfWriter writer, Document document) {
-        PdfContentByte cb = writer.getDirectContent();
-        cb.saveState();
-        // write the headertable
-        table.setTotalWidth(document.right() - document.left());
-        table.writeSelectedRows(0, -1, document.left(), document.getPageSize().getHeight() - 50, cb);
-        // compose the footer
-        String text = "Page " + writer.getPageNumber() + " of ";
-        float textSize = helv.getWidthPoint(text, 12);
-        float textBase = document.bottom() - 20;
-        cb.beginText();
-        cb.setFontAndSize(helv, 12);
-        // for odd pagenumbers, show the footer at the left
-        if ((writer.getPageNumber() & 1) == 1) {
-            cb.setTextMatrix(document.left(), textBase);
-            cb.showText(text);
-            cb.endText();
-            cb.addTemplate(tpl, document.left() + textSize, textBase);
-        }
-        // for even numbers, show the footer at the right
-        else {
-            float adjust = helv.getWidthPoint("0", 12);
-            cb.setTextMatrix(document.right() - textSize - adjust, textBase);
-            cb.showText(text);
-            cb.endText();
-            cb.addTemplate(tpl, document.right() - adjust, textBase);
-        }
-        cb.saveState();
-        // draw a Rectangle around the page
-        cb.setColorStroke(Color.orange);
-        cb.setLineWidth(2);
-        cb.rectangle(20, 20, document.getPageSize().getWidth() - 40, document.getPageSize().getHeight() - 40);
-        cb.stroke();
-        cb.restoreState();
-        // starting on page 3, a watermark with an Image that is made transparent
-        if (writer.getPageNumber() >= 3) {
-            cb.setGState(gstate);
-            cb.setColorFill(Color.red);
-            cb.beginText();
-            cb.setFontAndSize(helv, 48);
-            cb.showTextAligned(Element.ALIGN_CENTER, "Watermark Opacity " + writer.getPageNumber(), document.getPageSize().getWidth() / 2, document.getPageSize().getHeight() / 2, 45);
-            cb.endText();
-        }
-        cb.restoreState();
-        cb.sanityCheck();
-    }
-    
-    /**
-     * @see com.lowagie.text.pdf.PdfPageEventHelper#onStartPage(com.lowagie.text.pdf.PdfWriter, com.lowagie.text.Document)
-     */
-    public void onStartPage(PdfWriter writer, Document document) {
-        if (writer.getPageNumber() < 3) {
-            PdfContentByte cb = writer.getDirectContentUnder();
-            cb.saveState();
-            cb.setColorFill(Color.pink);
-            cb.beginText();
-            cb.setFontAndSize(helv, 48);
-            cb.showTextAligned(Element.ALIGN_CENTER, "My Watermark Under " + writer.getPageNumber(), document.getPageSize().getWidth() / 2, document.getPageSize().getHeight() / 2, 45);
-            cb.endText();
-            cb.restoreState();
-        }
-    }
-    
-    /**
-     * @see com.lowagie.text.pdf.PdfPageEventHelper#onCloseDocument(com.lowagie.text.pdf.PdfWriter, com.lowagie.text.Document)
-     */
-    public void onCloseDocument(PdfWriter writer, Document document) {
-       tpl.beginText();
-       tpl.setFontAndSize(helv, 12);
-       tpl.setTextMatrix(0, 0);
-       tpl.showText(Integer.toString(writer.getPageNumber() - 1));
-       tpl.endText();
-       tpl.sanityCheck();
-    }
+	public PageNumbersEventHandler(DocBase docBase) {
+		super();
+		this.pageNumberHeader = PageNumberHelper.findPageNumberElement(docBase.getDocHeader());
+		this.pageNumberFooter = PageNumberHelper.findPageNumberElement(docBase.getDocFooter());
+	}
+
+	/** A template that will hold the total number of pages. */
+	private PdfTemplate tpl;
+
+	/** The font that will be used. */
+	private BaseFont helv;
+
+	private DocElement pageNumberHeader;
+
+	private DocElement pageNumberFooter;
+
+	@Override
+	public void onOpenDocument(PdfWriter writer, Document document) {
+		if (this.pageNumberFooter != null || this.pageNumberHeader != null) {
+			SafeFunction.apply(() -> {
+				// initialization of the template
+				tpl = writer.getDirectContent().createTemplate(100, 100);
+				tpl.setBoundingBox(new Rectangle(-20, -20, 100, 100));
+				// initialization of the font
+				helv = BaseFont.createFont("Helvetica", BaseFont.WINANSI, false);
+			});
+		}
+	}
+
+	private void headerFooterHelper(PdfWriter writer, Document document, DocElement element, boolean header) {
+		if (element!= null) {
+			ElementData data = new ElementData( element );
+			PdfContentByte cb = writer.getDirectContent();
+			cb.saveState();
+			String text = data.parseText( writer.getPageNumber() );
+			float textSize = helv.getWidthPoint(text, 12);
+			float textBase = document.bottom() - 20;
+			if ( header ) {
+				textBase = document.top() - 20;
+			}
+			float align = document.left();
+			float templateAlign = align + textSize;
+			if ( data.getAlign() == DocPara.ALIGN_RIGHT ) {
+				templateAlign = document.right();
+				align = templateAlign - textSize;
+			} else if ( data.getAlign() == DocPara.ALIGN_CENTER ) {
+				align = (document.right()-document.left()-textSize)/2;
+				templateAlign = align+textSize;
+			}
+			cb.beginText();
+			cb.setFontAndSize(helv, 12);
+			cb.setTextMatrix(align, textBase);
+			cb.showText(text);
+			cb.endText();
+			cb.addTemplate(tpl, templateAlign, textBase);
+			cb.restoreState();
+			cb.sanityCheck();
+		}
+	}
+	
+	@Override
+	public void onStartPage(PdfWriter writer, Document document) {
+		this.headerFooterHelper(writer, document, this.pageNumberHeader, true);
+	}
+
+	@Override
+	public void onEndPage(PdfWriter writer, Document document) {
+		this.headerFooterHelper(writer, document, this.pageNumberFooter, false);
+	}
+
+	@Override
+	public void onCloseDocument(PdfWriter writer, Document document) {
+		if (this.pageNumberFooter != null || this.pageNumberHeader != null) {
+			tpl.beginText();
+			tpl.setFontAndSize(helv, 12);
+			tpl.setTextMatrix(0, 0);
+			tpl.showText(Integer.toString(writer.getPageNumber() - 1));
+			tpl.endText();
+			tpl.sanityCheck();
+		}
+	}
+
+}
+
+class ElementData {
+	
+	@Getter private int align;
+	
+	@Getter private String text;
+	
+	public ElementData( DocElement element ) {
+		if ( element instanceof DocPhrase ) {
+			DocPhrase e = (DocPhrase)element;
+			this.align = DocPara.ALIGN_CENTER;
+			this.text = e.getText();
+		} else if ( element instanceof DocPara ) {
+			DocPara e = (DocPara)element;
+			this.align = e.getAlign();
+			this.text = e.getText();
+		}
+	}
+	
+	public String parseText( int pageNumber ) {
+		return this.getText().replace( PageNumberHelper.CURRENT_PAGE , String.valueOf(pageNumber) ).replace( PageNumberHelper.PAGE_COUNT , "" );
+	}
+	
 }

@@ -17,10 +17,10 @@
 	<!-- font must be loaded -->
 	<info name="page-orient">horizontal</info>
 	<header>
-		<phrase fore-color="#222222" leading="3" align="right">header test</phrase>
+		<para fore-color="#222222" leading="3" align="right">${currentPage} / ${pageCount}</para>
 	</header>
 	<footer>
-		<para fore-color="#222222" leading="3" align="right">${r"${currentPage}"} / ${r"${pageCount}"}</para>
+		<para fore-color="#222222" leading="3" align="center">${currentPage} of ${pageCount}</para>
 	</footer>
   </metadata>
   <body>
@@ -55,8 +55,14 @@
     			</cell>
     		</row>     	     	
     	</table>
+    	
+    	<page-break/>
+    	
+    	 <phrase>test page 3</phrase>
+    	
   </body>
   
-  <page-break/>
+
+ 
   
 </doc>

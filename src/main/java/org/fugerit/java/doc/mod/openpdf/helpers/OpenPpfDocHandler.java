@@ -445,17 +445,9 @@ public class OpenPpfDocHandler {
 		return result;
 	}
 	
-	private void handleHeaderFooterElement( DocElement docElement, float leading, OpenPdfHelper docHelper , Phrase phrase ) throws DocumentException, IOException {
-		if ( docElement instanceof DocPhrase ) {
-			DocPhrase docPhrase = (DocPhrase) docElement;
-			Chunk ck = createChunk( docPhrase, docHelper );
-			if( docPhrase.getLeading() != null && docPhrase.getLeading().floatValue() != leading ) {
-				leading = docPhrase.getLeading().floatValue();
-				phrase.setLeading( leading );
-			}
-			phrase.add( ck );
-		} else  if ( docElement instanceof DocPara ) {
-			DocPara docPara = (DocPara) docElement;
+	private void handleHeaderFooterPara( DocElement docElement , Phrase phrase ) throws DocumentException, IOException {
+		DocPara docPara = (DocPara) docElement;
+		if ( !PageNumberHelper.isPageNumberContent( docPara.getText() ) ) {
 			if ( docPara.getLeading() != null ) {
 				phrase.setLeading( docPara.getLeading().floatValue() );
 			}
@@ -469,6 +461,22 @@ public class OpenPpfDocHandler {
 			}
 			Chunk ck = new Chunk( docPara.getText(), f );
 			phrase.add( ck );
+		}
+	}
+	
+	private void handleHeaderFooterElement( DocElement docElement, float leading, OpenPdfHelper docHelper , Phrase phrase ) throws DocumentException, IOException {
+		if ( docElement instanceof DocPhrase ) {
+			DocPhrase docPhrase = (DocPhrase) docElement;
+			if ( !PageNumberHelper.isPageNumberContent( docPhrase.getText() ) ) {
+				Chunk ck = createChunk( docPhrase, docHelper );
+				if( docPhrase.getLeading() != null && docPhrase.getLeading().floatValue() != leading ) {
+					leading = docPhrase.getLeading().floatValue();
+					phrase.setLeading( leading );
+				}
+				phrase.add( ck );
+			}
+		} else  if ( docElement instanceof DocPara ) {
+			this.handleHeaderFooterPara(docElement, phrase);
 		} else if ( docElement instanceof DocImage ) {
 			DocImage docImage = (DocImage)docElement;
 			Image img = createImage( docImage );

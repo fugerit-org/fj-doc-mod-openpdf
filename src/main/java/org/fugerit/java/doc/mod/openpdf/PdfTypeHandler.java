@@ -44,18 +44,7 @@ public class PdfTypeHandler extends DocTypeHandlerDefault {
 		PdfWriter pdfWriter = PdfWriter.getInstance( document, baos );
 		// create doc handler
 		OpenPpfDocHandler handler = new OpenPpfDocHandler( document, pdfWriter );
-		pdfWriter.setPageEvent( new PageNumbersEventHandler() );
-		if ( "true".equalsIgnoreCase( docBase.getInfo().getProperty( "set-total-page" ) ) ) {
-			handler.handleDoc( docBase );
-			int totalPageCount = pdfWriter.getCurrentPageNumber()-1;
-			document = new Document( PageSize.A4, Integer.parseInt( margins[0] ),
-					Integer.parseInt( margins[1] ),
-					Integer.parseInt( margins[2] ), 
-					Integer.parseInt( margins[3] ) );
-			baos = new ByteArrayOutputStream();
-			pdfWriter = PdfWriter.getInstance( document, baos );
-			handler = new OpenPpfDocHandler(document, pdfWriter, totalPageCount );
-		}
+		pdfWriter.setPageEvent( new PageNumbersEventHandler( docBase ) );
 		handler.handleDoc( docBase );
 		baos.writeTo( outputStream );
 		baos.close();
