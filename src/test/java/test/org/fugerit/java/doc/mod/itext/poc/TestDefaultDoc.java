@@ -29,6 +29,8 @@ public class TestDefaultDoc extends TestDocBase {
 	private static final String DEFAULT_DOC_ALT = "default_doc_alt";
 	
 	private static final String DEFAULT_DOC_ALT1 = "default_doc_alt1";
+
+	private static final String DEFAULT_DOC_ALT2 = "default_doc_alt2";
 	
 	@Test
 	public void testOpenFailPDF() {
@@ -93,6 +95,24 @@ public class TestDefaultDoc extends TestDocBase {
 	@Test
 	public void testOpenAlt1RTF() {
 		boolean ok = this.testDocWorker( DEFAULT_DOC_ALT1 ,  RtfTypeHandler.HANDLER );
+		Assert.assertTrue(ok);
+	}
+	
+	@Test
+	public void testOpenAlt2PDF() {
+		boolean ok = this.testDocWorker( DEFAULT_DOC_ALT2 ,  PdfTypeHandler.HANDLER );
+		Assert.assertTrue(ok);
+	}
+
+	@Test
+	public void testOpenAlt2HTML() {
+		boolean ok = this.testDocWorker( DEFAULT_DOC_ALT2 ,  HtmlTypeHandler.HANDLER );
+		Assert.assertTrue(ok);
+	}
+	
+	@Test
+	public void testOpenAlt2RTF() {
+		boolean ok = this.testDocWorker( DEFAULT_DOC_ALT2 ,  RtfTypeHandler.HANDLER );
 		Assert.assertTrue(ok);
 	}
 	

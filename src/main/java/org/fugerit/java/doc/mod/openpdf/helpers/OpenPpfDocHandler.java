@@ -445,7 +445,7 @@ public class OpenPpfDocHandler {
 		return result;
 	}
 	
-	private void handleHeaderFooterPara( DocElement docElement , Phrase phrase ) throws DocumentException, IOException {
+	private void handleHeaderFooterPara( DocElement docElement , Phrase phrase ) throws DocumentException {
 		DocPara docPara = (DocPara) docElement;
 		if ( !PageNumberHelper.isPageNumberContent( docPara.getText() ) ) {
 			if ( docPara.getLeading() != null ) {
