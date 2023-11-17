@@ -19,7 +19,7 @@ import com.lowagie.text.pdf.PdfDestination;
 import com.lowagie.text.pdf.PdfOutline;
 import com.lowagie.text.pdf.PdfWriter;
 
-public class PocIndex {
+public class TestPocIndex {
 
 	private static final String VERSION = "002";
 	

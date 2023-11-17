@@ -7,12 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.2.0-sa.1] - 2023-11-17
+### Added
+
+- document metadata handling (doc-title, doc-author, doc-language, doc-subject, doc-creator)
 
 ### Changed
 
-- fj-doc version set to 3.2.0
-- openpdf version 1.3.33
+- fj-doc version set to 3.1.3
 
 ## [1.1.0-sa.1] - 2023-09-16
 

@@ -17,11 +17,11 @@
 	<info name="set-total-page">true</info>
 	<info name="html-css-link">/css/test.css</info>
 	<header-ext>
-		<para align="center" fore-color="#eeeeee">header test</para>
+		<phrase align="center" fore-color="#eeeeee">${currentPage} / ${pageCount}</phrase>
 	</header-ext>
 	<footer-ext>
 		<para align="left">test</para>
-		<para align="center">${r"${currentPage}"} / ${r"${pageCount}"}</para>
+		<para align="left">${currentPage} / ${pageCount}</para>
 		<para align="right">test</para>
 	</footer-ext>
   </metadata>

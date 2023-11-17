@@ -8,6 +8,7 @@ import org.fugerit.java.doc.base.config.DocOutput;
 import org.fugerit.java.doc.base.config.DocTypeHandler;
 import org.fugerit.java.doc.base.config.DocTypeHandlerDefault;
 import org.fugerit.java.doc.base.model.DocBase;
+import org.fugerit.java.doc.mod.openpdf.events.PageNumbersEventHandler;
 import org.fugerit.java.doc.mod.openpdf.helpers.OpenPpfDocHandler;
 
 import com.lowagie.text.Document;
@@ -16,12 +17,13 @@ import com.lowagie.text.pdf.PdfWriter;
 
 public class PdfTypeHandler extends DocTypeHandlerDefault {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 5459938865782356227L;
 	
 	public static final DocTypeHandler HANDLER = new PdfTypeHandler();
+	
+	/*
+	 * OpenPDF examples : https://github.com/LibrePDF/OpenPDF/tree/master/pdf-toolbox/src/test/java/com/lowagie/examples
+	 */
 	
 	public PdfTypeHandler() {
 		super( OpenPpfDocHandler.DOC_OUTPUT_PDF, OpenPpfDocHandler.MODULE );
@@ -42,17 +44,7 @@ public class PdfTypeHandler extends DocTypeHandlerDefault {
 		PdfWriter pdfWriter = PdfWriter.getInstance( document, baos );
 		// create doc handler
 		OpenPpfDocHandler handler = new OpenPpfDocHandler( document, pdfWriter );
-		if ( "true".equalsIgnoreCase( docBase.getInfo().getProperty( "set-total-page" ) ) ) {
-			handler.handleDoc( docBase );
-			int totalPageCount = pdfWriter.getCurrentPageNumber()-1;
-			document = new Document( PageSize.A4, Integer.parseInt( margins[0] ),
-					Integer.parseInt( margins[1] ),
-					Integer.parseInt( margins[2] ), 
-					Integer.parseInt( margins[3] ) );
-			baos = new ByteArrayOutputStream();
-			pdfWriter = PdfWriter.getInstance( document, baos );
-			handler = new OpenPpfDocHandler(document, pdfWriter, totalPageCount );
-		}
+		//pdfWriter.setPageEvent( new PageNumbersEventHandler( docBase ) );
 		handler.handleDoc( docBase );
 		baos.writeTo( outputStream );
 		baos.close();

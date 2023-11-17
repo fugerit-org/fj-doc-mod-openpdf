@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.function.Consumer;
 
 import org.fugerit.java.core.cfg.ConfigRuntimeException;
 import org.fugerit.java.core.lang.helpers.StringUtils;
@@ -28,6 +29,7 @@ import org.fugerit.java.doc.base.model.DocPara;
 import org.fugerit.java.doc.base.model.DocPhrase;
 import org.fugerit.java.doc.base.model.DocStyle;
 import org.fugerit.java.doc.base.model.DocTable;
+import org.fugerit.java.doc.base.typehelper.generic.GenericConsts;
 import org.fugerit.java.doc.base.xml.DocModelUtils;
 
 import com.lowagie.text.Anchor;
@@ -345,11 +347,24 @@ public class OpenPpfDocHandler {
 		}	
 	}
 	
+	private void applyIfNotEmpty( String value, Consumer<String> c ) {
+		if ( StringUtils.isNotEmpty( value ) ) {
+			c.accept(value);
+		}
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.fugerit.java.doc.base.DocHandler#handleDoc(org.fugerit.java.doc.base.DocBase)
 	 */
 	public void handleDoc(DocBase docBase) throws DocumentException, IOException {
 		Properties info = docBase.getInfo();
+		
+		// set document metadata
+		applyIfNotEmpty( docBase.getStableInfo().getProperty( GenericConsts.INFO_KEY_DOC_TITLE ) , s -> this.document.addTitle( s ) );
+		applyIfNotEmpty( docBase.getStableInfo().getProperty( GenericConsts.INFO_KEY_DOC_AUTHOR ) , s -> this.document.addAuthor( s ) );
+		applyIfNotEmpty( docBase.getStableInfo().getProperty( GenericConsts.INFO_KEY_DOC_SUBJECT ) , s -> this.document.addSubject( s ) );
+		applyIfNotEmpty( docBase.getStableInfo().getProperty( GenericConsts.INFO_KEY_DOC_CREATOR ) , s -> this.document.addCreator( s ) );
+		applyIfNotEmpty( docBase.getStableInfo().getProperty( GenericConsts.INFO_KEY_DOC_LANGUAGE ) , s -> this.document.setDocumentLanguage( s ) );
 		
 		String defaultFontName = info.getProperty( DOC_DEFAULT_FONT_NAME, "helvetica" );
 		String defaultFontSize = info.getProperty( DOC_DEFAULT_FONT_SIZE, "10" );
@@ -430,17 +445,9 @@ public class OpenPpfDocHandler {
 		return result;
 	}
 	
-	private void handleHeaderFooterElement( DocElement docElement, float leading, OpenPdfHelper docHelper , Phrase phrase ) throws DocumentException, IOException {
-		if ( docElement instanceof DocPhrase ) {
-			DocPhrase docPhrase = (DocPhrase) docElement;
-			Chunk ck = createChunk( docPhrase, docHelper );
-			if( docPhrase.getLeading() != null && docPhrase.getLeading().floatValue() != leading ) {
-				leading = docPhrase.getLeading().floatValue();
-				phrase.setLeading( leading );
-			}
-			phrase.add( ck );
-		} else  if ( docElement instanceof DocPara ) {
-			DocPara docPara = (DocPara) docElement;
+	private void handleHeaderFooterPara( DocElement docElement , Phrase phrase ) throws DocumentException {
+		DocPara docPara = (DocPara) docElement;
+		if ( !PageNumberHelper.isPageNumberContent( docPara.getText() ) ) {
 			if ( docPara.getLeading() != null ) {
 				phrase.setLeading( docPara.getLeading().floatValue() );
 			}
@@ -454,6 +461,22 @@ public class OpenPpfDocHandler {
 			}
 			Chunk ck = new Chunk( docPara.getText(), f );
 			phrase.add( ck );
+		}
+	}
+	
+	private void handleHeaderFooterElement( DocElement docElement, float leading, OpenPdfHelper docHelper , Phrase phrase ) throws DocumentException, IOException {
+		if ( docElement instanceof DocPhrase ) {
+			DocPhrase docPhrase = (DocPhrase) docElement;
+			if ( !PageNumberHelper.isPageNumberContent( docPhrase.getText() ) ) {
+				Chunk ck = createChunk( docPhrase, docHelper );
+				if( docPhrase.getLeading() != null && docPhrase.getLeading().floatValue() != leading ) {
+					leading = docPhrase.getLeading().floatValue();
+					phrase.setLeading( leading );
+				}
+				phrase.add( ck );
+			}
+		} else  if ( docElement instanceof DocPara ) {
+			this.handleHeaderFooterPara(docElement, phrase);
 		} else if ( docElement instanceof DocImage ) {
 			DocImage docImage = (DocImage)docElement;
 			Image img = createImage( docImage );

@@ -4,6 +4,6 @@ import com.lowagie.text.Element;
 
 public interface ParentElement {
 	
-	public void add( Element element ) throws Exception;
+	public void add( Element element );
 	
 }
