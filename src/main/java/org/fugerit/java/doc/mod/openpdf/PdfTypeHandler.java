@@ -44,7 +44,7 @@ public class PdfTypeHandler extends DocTypeHandlerDefault {
 		PdfWriter pdfWriter = PdfWriter.getInstance( document, baos );
 		// create doc handler
 		OpenPpfDocHandler handler = new OpenPpfDocHandler( document, pdfWriter );
-		pdfWriter.setPageEvent( new PageNumbersEventHandler( docBase ) );
+		//pdfWriter.setPageEvent( new PageNumbersEventHandler( docBase ) );
 		handler.handleDoc( docBase );
 		baos.writeTo( outputStream );
 		baos.close();

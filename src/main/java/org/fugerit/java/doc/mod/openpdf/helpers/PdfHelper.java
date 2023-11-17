@@ -75,7 +75,7 @@ public class PdfHelper  extends PdfPageEventHelper {
 				DocElement current = itElements.next();
 				if ( current instanceof DocPara ) {
 					DocPara para = (DocPara) current;
-					String text = OpenPpfDocHandler.createText( docHelper.getParams(), para.getText() );
+					String text = OpenPpfDocHandler.createText( docHelper.getParams(), para.getText() ).replace( PageNumberHelper.PAGE_COUNT , "" );
 					float textSize = baseFont.getWidthPoint(text, footerTextSize);
 					float textBase = document.bottom() - totalOffset;
 					int rowOffset = 10;
@@ -90,7 +90,6 @@ public class PdfHelper  extends PdfPageEventHelper {
 						cb.setTextMatrix(document.right() - textSize - adjust, textBase);
 						cb.showText(text);
 					}
-					
 					totalOffset+= rowOffset;
 				} else {
 	    			throw new ConfigRuntimeException( "Element not allowed in footer (accepted only DocPara) : "+current );
@@ -110,6 +109,7 @@ public class PdfHelper  extends PdfPageEventHelper {
         totalPages.setTextMatrix(0, 0);
         totalPages.showText(String.valueOf( writer.getPageNumber() - 1) );
         totalPages.endText();
+		totalPages.sanityCheck();
     }
  
     public void setPageNumberAlignment(int pageNumberAlignment) {
