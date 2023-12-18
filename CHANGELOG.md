@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- openpdf version 1.3.34
+
 ## [1.2.0-sa.1] - 2023-11-17
 
 ### Changed
