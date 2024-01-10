@@ -1,4 +1,4 @@
-package test.org.fugerit.java.doc.mod.itext.poc;
+package test.org.fugerit.java.doc.mod.openpdf.poc;
 
 import org.fugerit.java.doc.mod.openpdf.helpers.PhraseParent;
 import org.junit.Assert;

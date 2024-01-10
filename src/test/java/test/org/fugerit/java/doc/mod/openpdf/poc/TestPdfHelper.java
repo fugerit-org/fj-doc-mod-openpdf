@@ -1,4 +1,4 @@
-package test.org.fugerit.java.doc.mod.itext.poc;
+package test.org.fugerit.java.doc.mod.openpdf.poc;
 
 import org.fugerit.java.core.cfg.ConfigRuntimeException;
 import org.fugerit.java.doc.mod.openpdf.helpers.OpenPdfFontHelper;

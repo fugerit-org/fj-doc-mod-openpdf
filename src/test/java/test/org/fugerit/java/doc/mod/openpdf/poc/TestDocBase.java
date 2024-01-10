@@ -1,4 +1,4 @@
-package test.org.fugerit.java.doc.mod.itext.poc;
+package test.org.fugerit.java.doc.mod.openpdf.poc;
 
 import static org.junit.Assert.fail;
 
@@ -13,9 +13,13 @@ import org.fugerit.java.doc.base.config.DocOutput;
 import org.fugerit.java.doc.base.config.DocTypeHandler;
 
 import lombok.extern.slf4j.Slf4j;
+import org.fugerit.java.doc.freemarker.process.FreemarkerDocProcessConfig;
+import org.fugerit.java.doc.freemarker.process.FreemarkerDocProcessConfigFacade;
 
 @Slf4j
 public class TestDocBase {
+
+	private FreemarkerDocProcessConfig config = FreemarkerDocProcessConfigFacade.loadConfigSafe( "cl://fm-test-mod-openpdf-config.xml" );
 
 	protected boolean testDocWorker( String testCase, DocTypeHandler handler ) {
 		boolean ok = false;

@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- fj-doc-freemarker dependency
+- xml font configuration
+
+### Changed
+
 - fj-doc version set to 3.3.0
 - openpdf version 1.3.36
 
