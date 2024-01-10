@@ -21,9 +21,10 @@ public class TestDocBase {
 
 	private FreemarkerDocProcessConfig config = FreemarkerDocProcessConfigFacade.loadConfigSafe( "cl://fm-test-mod-openpdf-config.xml" );
 
-	protected boolean testDocWorker( String testCase, DocTypeHandler handler ) {
+	protected boolean testDocWorker( String testCase, String type ) {
 		boolean ok = false;
 		String inputXml = "xml/"+testCase+".xml" ;
+		DocTypeHandler handler = this.config.getFacade().findHandler( type );
 		File outputFile = new File( "target", testCase+"."+handler.getType() );
 		log.info( "inputXml:{}, outputFile:{}", inputXml, outputFile );
 		try ( InputStreamReader reader = new InputStreamReader( ClassHelper.loadFromDefaultClassLoader( inputXml ) );

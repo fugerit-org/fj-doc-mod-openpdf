@@ -1,6 +1,6 @@
 package test.org.fugerit.java.doc.mod.openpdf.poc;
 
-import org.fugerit.java.doc.mod.openpdf.PdfTypeHandler;
+import org.fugerit.java.doc.base.config.DocConfig;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -10,7 +10,7 @@ public class TestSpec extends TestDocBase {
 	
 	@Test
 	public void testOpenPDF() {
-		boolean ok = this.testDocWorker( DEFAULT_DOC ,  PdfTypeHandler.HANDLER );
+		boolean ok = this.testDocWorker( DEFAULT_DOC ,  DocConfig.TYPE_PDF );
 		Assert.assertTrue(ok);
 	}
 
