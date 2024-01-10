@@ -1,4 +1,4 @@
-package test.org.fugerit.java.doc.mod.itext.poc;
+package test.org.fugerit.java.doc.mod.openpdf.poc;
 
 import java.awt.Color;
 import java.io.FileOutputStream;
