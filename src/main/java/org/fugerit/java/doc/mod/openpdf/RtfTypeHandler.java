@@ -37,7 +37,7 @@ public class RtfTypeHandler extends DocTypeHandlerDefault {
 		String[] margins = docBase.getInfo().getProperty( "margins", "20;20;20;20" ).split( ";" );
 		Document document = new Document( PageSize.A4, Integer.parseInt( margins[0] ),
 				Integer.parseInt( margins[1] ),
-				Integer.parseInt( margins[2] ), 
+				Integer.parseInt( margins[2] ),
 				Integer.parseInt( margins[3] ) );
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		RtfWriter2 rtfWriter2 = RtfWriter2.getInstance( document, baos );
@@ -48,6 +48,7 @@ public class RtfTypeHandler extends DocTypeHandlerDefault {
 		outputStream.close();	
 	}
 
+	@Override
 	protected void handleConfigTag(Element config) throws ConfigException {
 		super.handleConfigTag(config);
 		OpenPDFConfigHelper.handleConfig( config, this.getType() );

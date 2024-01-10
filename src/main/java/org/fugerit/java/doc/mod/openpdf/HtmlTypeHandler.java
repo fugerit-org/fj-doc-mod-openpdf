@@ -43,6 +43,7 @@ public class HtmlTypeHandler extends DocTypeHandlerDefault {
 		outputStream.close();
 	}
 
+	@Override
 	protected void handleConfigTag(Element config) throws ConfigException {
 		super.handleConfigTag(config);
 		OpenPDFConfigHelper.handleConfig( config, this.getType() );

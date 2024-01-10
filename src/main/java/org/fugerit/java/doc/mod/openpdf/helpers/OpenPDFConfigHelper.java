@@ -8,6 +8,8 @@ import org.w3c.dom.NodeList;
 @Slf4j
 public class OpenPDFConfigHelper {
 
+    private OpenPDFConfigHelper() {}
+
     public static final String TAG_NAME_FONT = "font";
 
     public static final String ATT_NAME = "name";
